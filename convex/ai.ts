@@ -2,8 +2,8 @@ import { action } from "./_generated/server";
 import { v } from "convex/values";
 
 // Gemini API configuration (use ENV vars in production!)
-const GEMINI_API_KEY = "";
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 // Unsplash API configuration
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY!;
@@ -51,13 +51,21 @@ async function extractAICandidateText(response: Response) {
  * Helper: clean AI returned text to try extract JSON blob
  */
 function cleanAndExtractJson(text: string) {
-  let clean = text.trim();
-  // remove markdown fences if any
-  clean = clean.replace(/```json\n?/gi, "").replace(/```\n?/g, "");
-  // find first JSON object substring
-  const match = clean.match(/\{[\s\S]*\}/);
-  if (match) return match[0];
-  return clean;
+  // 1. Remove markdown code blocks (start and end)
+  let clean = text.replace(/```json/gi, "").replace(/```/g, "");
+
+  // 2. Find the first '{' and the last '}'
+  const firstOpen = clean.indexOf("{");
+  const lastClose = clean.lastIndexOf("}");
+
+  if (firstOpen !== -1 && lastClose !== -1 && lastClose > firstOpen) {
+    clean = clean.substring(firstOpen, lastClose + 1);
+  }
+
+  // 3. Remove trailing commas (common AI JSON error)
+  clean = clean.replace(/,(\s*[}\]])/g, '$1');
+
+  return clean.trim();
 }
 
 /**
@@ -111,7 +119,9 @@ export const generateItinerary = action({
     - Include practical tips and recommendations
     - Focus on Indian destinations and local experiences
 
-    IMPORTANT: Respond ONLY with valid JSON in this exact format:
+    IMPORTANT: Respond ONLY with valid, raw JSON. Do NOT use markdown formatting (no markdown code blocks). Do NOT include any text outside the JSON object.
+
+  Expected JSON Format:
     {
       "days": [
         {
@@ -142,12 +152,12 @@ export const generateItinerary = action({
             {
               parts: [
                 {
-                  text: `You are a travel planning expert specializing in Indian destinations. Provide practical, budget-conscious itineraries with accurate cost estimates in Indian Rupees.\n\n${prompt}`,
+                  text: `You are a travel planning expert specializing in Indian destinations.Provide practical, budget - conscious itineraries with accurate cost estimates in Indian Rupees.\n\n${prompt} `,
                 },
               ],
             },
           ],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+          generationConfig: { temperature: 0.7, maxOutputTokens: 4096 },
         }),
       });
       console.log(response)
@@ -168,7 +178,7 @@ export const generateItinerary = action({
           return {
             days: itinerary.days.map((day: any, index: number) => ({
               day: day.day || index + 1,
-              title: day.title || `Day ${index + 1}`,
+              title: day.title || `Day ${index + 1} `,
               activities: Array.isArray(day.activities)
                 ? day.activities
                 : [day.activities || "Activity details not available"],
@@ -224,23 +234,23 @@ export const chatWithAI = action({
       return "AI service unavailable. Please try again later.";
     }
 
-    const systemPrompt = `You are sahyaatra AI, a helpful travel assistant for India. You help users with:
-    - Travel planning and recommendations
+    const systemPrompt = `You are sahyaatra AI, a helpful travel assistant for India.You help users with:
+  - Travel planning and recommendations
     - Budget advice for Indian destinations
-    - Cultural insights and local tips
-    - Safety and practical travel information
-    - Connecting with travel companions
+      - Cultural insights and local tips
+        - Safety and practical travel information
+          - Connecting with travel companions
 
-    Keep responses helpful, concise, and focused on Indian travel. If asked about booking or payments, explain that users should use the platform's trip posting feature to connect with travel buddies.
+    Keep responses helpful, concise, and focused on Indian travel.If asked about booking or payments, explain that users should use the platform's trip posting feature to connect with travel buddies.
 
-    ${args.context ? `Context: ${args.context}` : ""}`;
+    ${args.context ? `Context: ${args.context}` : ""} `;
 
     try {
       const response = await fetch(GEMINI_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `${systemPrompt}\n\nUser: ${args.message}` }] }],
+          contents: [{ parts: [{ text: `${systemPrompt} \n\nUser: ${args.message} ` }] }],
           generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
         }),
       });
@@ -271,32 +281,32 @@ export const getDestinationInfo = action({
       };
     }
 
-    const prompt = `Provide key information about ${args.destination} as a travel destination in India. Include:
-    - Best time to visit
-    - Top 5 attractions
-    - Approximate budget for 3 days (budget, mid-range, luxury)
-    - Local cuisine highlights
-    - Transportation tips
-    
-    Format as JSON:
-    {
-      "bestTime": "Month range",
-      "attractions": ["Attraction 1", "Attraction 2", ...],
+    const prompt = `Provide key information about ${args.destination} as a travel destination in India.Include:
+- Best time to visit
+  - Top 5 attractions
+    - Approximate budget for 3 days(budget, mid - range, luxury)
+      - Local cuisine highlights
+        - Transportation tips
+
+Format as JSON:
+{
+  "bestTime": "Month range",
+    "attractions": ["Attraction 1", "Attraction 2", ...],
       "budgetEstimate": {
-        "budget": 5000,
-        "midRange": 12000,
+    "budget": 5000,
+      "midRange": 12000,
         "luxury": 25000
-      },
-      "cuisine": ["Dish 1", "Dish 2", ...],
-      "transportation": "Transportation tips"
-    }`;
+  },
+  "cuisine": ["Dish 1", "Dish 2", ...],
+    "transportation": "Transportation tips"
+} `;
 
     try {
       const response = await fetch(GEMINI_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are a travel expert specializing in Indian destinations. Provide accurate, practical information.\n\n${prompt}` }] }],
+          contents: [{ parts: [{ text: `You are a travel expert specializing in Indian destinations.Provide accurate, practical information.\n\n${prompt} ` }] }],
           generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
         }),
       });
@@ -346,8 +356,8 @@ export const getPlaceImages = action({
     const count = args.count || 5;
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(args.placeName + " India tourism")}&per_page=${count}&orientation=landscape`,
-        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } }
+        `${UNSPLASH_API_URL} /search/photos ? query = ${encodeURIComponent(args.placeName + " India tourism")}& per_page=${count}& orientation=landscape`,
+        { headers: { Authorization: `Client - ID ${UNSPLASH_ACCESS_KEY} ` } }
       );
 
       const data = await response.json();
@@ -375,8 +385,8 @@ export const getDestinationImages = action({
     const query = args.category ? `${args.destination} ${args.category} India` : `${args.destination} tourism India`;
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=landscape`,
-        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } }
+        `${UNSPLASH_API_URL} /search/photos ? query = ${encodeURIComponent(query)}& per_page=8 & orientation=landscape`,
+        { headers: { Authorization: `Client - ID ${UNSPLASH_ACCESS_KEY} ` } }
       );
 
       const data = await response.json();
@@ -404,8 +414,8 @@ export const getRandomTravelImages = action({
     const count = args.count || 10;
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL}/search/photos?query=India travel tourism&per_page=${count}&orientation=landscape`,
-        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } }
+        `${UNSPLASH_API_URL} /search/photos ? query = India travel tourism & per_page=${count}& orientation=landscape`,
+        { headers: { Authorization: `Client - ID ${UNSPLASH_ACCESS_KEY} ` } }
       );
 
       const data = await response.json();
