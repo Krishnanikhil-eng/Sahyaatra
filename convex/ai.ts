@@ -7,8 +7,6 @@ const GEMINI_API_KEYS = (process.env.GEMINI_API_KEY || "")
   .map(k => k.trim())
   .filter(k => k.length > 0);
 
-console.log(`AI Service initialized with ${GEMINI_API_KEYS.length} keys.`);
-
 // Track rate-limited keys: key -> timestamp when it becomes available again
 const rateLimitedKeys = new Map<string, number>();
 
