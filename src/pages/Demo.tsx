@@ -28,13 +28,13 @@ export function Demo() {
   const [isChatting, setIsChatting] = useState(false);
 
   const availableInterests = [
-    "Adventure", "Culture", "Food", "Nature", "Photography", 
+    "Adventure", "Culture", "Food", "Nature", "Photography",
     "Spiritual", "Beach", "Mountains", "History", "Wildlife"
   ];
 
   const handleInterestToggle = (interest: string) => {
-    setInterests(prev => 
-      prev.includes(interest) 
+    setInterests(prev =>
+      prev.includes(interest)
         ? prev.filter(i => i !== interest)
         : [...prev, interest]
     );
@@ -61,38 +61,20 @@ export function Demo() {
         travelers: Number(travelers),
         interests,
       });
-      
-      // Handle the case where result might be a string containing JSON
-      let parsedResult = result;
-      console.log("AI Response type:", typeof result);
+
+      // Backend already returns a properly structured object with days[], totalEstimatedCost, and generalTips[]
       console.log("AI Response:", result);
-      
-      if (typeof result === 'string') {
-        try {
-          // Try to parse the string as JSON
-          parsedResult = JSON.parse(result);
-          console.log("Successfully parsed JSON:", parsedResult);
-        } catch (parseError) {
-          console.error("JSON parsing failed:", parseError);
-          // If parsing fails, create a structured response
-          parsedResult = {
-            days: [
-              {
-                day: 1,
-                title: "AI Generated Itinerary",
-                activities: [result.substring(0, 200) + "..."],
-                estimatedCost: Math.floor(Number(budget) / 3),
-                tips: "Please check the full response for detailed planning."
-              }
-            ],
-            totalEstimatedCost: Number(budget),
-            generalTips: ["AI response received but needs formatting"]
-          };
-        }
+
+      // Check if this is a rate limit error
+      if (result.error === "RATE_LIMIT") {
+        setItinerary(result);
+        toast.warning("AI service is temporarily busy. Please wait a few seconds and try again.", {
+          duration: 5000,
+        });
+      } else {
+        setItinerary(result);
+        toast.success("Itinerary generated successfully!");
       }
-      
-      setItinerary(parsedResult);
-      toast.success("Itinerary generated successfully!");
     } catch (error: any) {
       console.error("Itinerary generation error:", error);
       toast.error(error.message || "Failed to generate itinerary");
@@ -175,7 +157,7 @@ export function Demo() {
                 <Wand2 className="w-6 h-6 mr-2 text-purple-600" />
                 AI Itinerary Generator
               </h2>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -271,11 +253,10 @@ export function Demo() {
                         key={interest}
                         type="button"
                         onClick={() => handleInterestToggle(interest)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          interests.includes(interest)
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${interests.includes(interest)
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
                       >
                         {interest}
                       </button>
@@ -306,7 +287,7 @@ export function Demo() {
             {/* AI Chat */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Chat with AI Assistant</h3>
-              
+
               <div className="h-64 overflow-y-auto border border-gray-200 rounded-lg p-4 mb-4 space-y-3">
                 {chatMessages.length === 0 ? (
                   <div className="text-center text-gray-500 py-8">
@@ -320,11 +301,10 @@ export function Demo() {
                       className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg ${
-                          msg.isUser
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}
+                        className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg ${msg.isUser
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-gray-100 text-gray-800'
+                          }`}
                       >
                         <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
                       </div>
@@ -450,7 +430,7 @@ export function Demo() {
                       </div>
                     </div>
                   )}
-                  
+
                   {itinerary.totalEstimatedCost && (
                     <div className="border-t pt-4">
                       <div className="flex items-center justify-between text-lg font-semibold">

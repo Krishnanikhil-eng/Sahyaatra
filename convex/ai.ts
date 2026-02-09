@@ -1,13 +1,75 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 
-// Gemini API configuration (use ENV vars in production!)
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+// Gemini API configuration - support for multiple keys
+const GEMINI_API_KEYS = (process.env.GEMINI_API_KEY || "")
+  .split(",")
+  .map(k => k.trim())
+  .filter(k => k.length > 0);
+
+console.log(`AI Service initialized with ${GEMINI_API_KEYS.length} keys.`);
+
+// Track rate-limited keys: key -> timestamp when it becomes available again
+const rateLimitedKeys = new Map<string, number>();
 
 // Unsplash API configuration
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY!;
 const UNSPLASH_API_URL = "https://api.unsplash.com";
+
+/**
+ * Helper: Call Gemini API with automatic key rotation
+ * Tries each available key until one succeeds or all are rate-limited
+ */
+async function callGeminiWithKeyRotation(payload: any): Promise<Response | null> {
+  const now = Date.now();
+
+  // Try each API key in sequence
+  for (const apiKey of GEMINI_API_KEYS) {
+    // Check if this key is rate-limited
+    const limitedUntil = rateLimitedKeys.get(apiKey);
+    if (limitedUntil && now < limitedUntil) {
+      console.log(`Skipping rate-limited key ending in ...${apiKey.slice(-8)}`);
+      continue;
+    }
+
+    // If cooldown expired, remove from rate-limited map
+    if (limitedUntil && now >= limitedUntil) {
+      rateLimitedKeys.delete(apiKey);
+    }
+
+    console.log(`Trying API key ending in ...${apiKey.slice(-8)}`);
+
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(GEMINI_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      // If rate limited, mark this key and try next one
+      if (response.status === 429) {
+        console.log(`Key ...${apiKey.slice(-8)} hit rate limit, trying next key`);
+        rateLimitedKeys.set(apiKey, now + 60000); // Block for 1 minute
+        continue;
+      }
+
+      // Success! Return the response
+      console.log(`Successfully called API with key ...${apiKey.slice(-8)}`);
+      return response;
+
+    } catch (error) {
+      console.error(`Error with key ...${apiKey.slice(-8)}:`, error);
+      continue;
+    }
+  }
+
+  // All keys failed or are rate-limited
+  console.error("All API keys are rate-limited or failed");
+  return null;
+}
+
 
 /**
  * Helper: safely extract the text content from Gemini response
@@ -48,7 +110,7 @@ async function extractAICandidateText(response: Response) {
 }
 
 /**
- * Helper: clean AI returned text to try extract JSON blob
+ * Helper: clean AI returned text to try extract JSON blob and attempt to fix incomplete JSON
  */
 function cleanAndExtractJson(text: string) {
   // 1. Remove markdown code blocks (start and end)
@@ -65,7 +127,58 @@ function cleanAndExtractJson(text: string) {
   // 3. Remove trailing commas (common AI JSON error)
   clean = clean.replace(/,(\s*[}\]])/g, '$1');
 
+  // 4. Attempt to fix incomplete JSON by closing unclosed structures
+  // Count open vs closed braces and brackets
+  let openBraces = (clean.match(/{/g) || []).length;
+  let closeBraces = (clean.match(/}/g) || []).length;
+  let openBrackets = (clean.match(/\[/g) || []).length;
+  let closeBrackets = (clean.match(/\]/g) || []).length;
+
+  // If there are unclosed structures, try to close them
+  if (openBraces > closeBraces || openBrackets > closeBrackets) {
+    console.log("Attempting to fix incomplete JSON - unclosed structures detected");
+
+    // Remove any trailing incomplete key-value pairs (e.g., "key": incomplete_value)
+    clean = clean.replace(/,?\s*"[^"]*"\s*:\s*[^,}\]]*$/, '');
+
+    // Close arrays first, then objects
+    for (let i = 0; i < (openBrackets - closeBrackets); i++) {
+      clean += ']';
+    }
+    for (let i = 0; i < (openBraces - closeBraces); i++) {
+      clean += '}';
+    }
+
+    console.log("Fixed JSON by adding missing closing brackets/braces");
+  }
+
   return clean.trim();
+}
+
+/**
+ * Rate limit specific fallback
+ */
+function rateLimitItinerary(args: any) {
+  return {
+    error: "RATE_LIMIT",
+    days: [
+      {
+        day: 1,
+        title: "AI Service Temporarily Busy",
+        activities: [
+          "The AI service has reached its rate limit.",
+          "Please wait a few seconds and try again.",
+        ],
+        estimatedCost: 0,
+        tips: "This is a temporary issue. Your request will work after a short wait.",
+      },
+    ],
+    totalEstimatedCost: args.budget || 0,
+    generalTips: [
+      "AI service is temporarily busy. Please wait a few seconds and try again.",
+      "Rate limits reset automatically after a short period.",
+    ],
+  };
 }
 
 /**
@@ -102,13 +215,11 @@ export const generateItinerary = action({
     interests: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    // If env var missing, log and return safe fallback
-    if (!GEMINI_API_KEY) {
-      console.error("Missing GEMINI_API_KEY environment variable. Cannot call Gemini API.");
+    // Check if we have any API keys configured
+    if (GEMINI_API_KEYS.length === 0) {
+      console.error("No GEMINI_API_KEY environment variables configured. Cannot call Gemini API.");
       return fallbackItinerary(args);
     }
-
-    console.log(GEMINI_API_KEY)
 
     const prompt = `Create a detailed travel itinerary for ${args.destination} from ${args.startDate} to ${args.endDate}.
 
@@ -144,27 +255,36 @@ export const generateItinerary = action({
     }`;
 
     try {
-      const response = await fetch(GEMINI_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `You are a travel planning expert specializing in Indian destinations.Provide practical, budget - conscious itineraries with accurate cost estimates in Indian Rupees.\n\n${prompt} `,
-                },
-              ],
-            },
-          ],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 4096 },
-        }),
+      const response = await callGeminiWithKeyRotation({
+        contents: [
+          {
+            parts: [
+              {
+                text: `You are a travel planning expert specializing in Indian destinations.Provide practical, budget - conscious itineraries with accurate cost estimates in Indian Rupees.\n\n${prompt} `,
+              },
+            ],
+          },
+        ],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 8000 },
       });
+
+      // If all keys are exhausted, return rate limit response
+      if (!response) {
+        console.error("All API keys exhausted or rate-limited");
+        return rateLimitItinerary(args);
+      }
+
       console.log(response)
 
+      // The rotation function already handled 429 errors, no need to check again
       const { text: content, raw, dataErr } = await extractAICandidateText(response);
 
       if (!content) {
+        // Check if it was a rate limit error from the error object
+        if (dataErr && (dataErr.code === 429 || dataErr.message?.includes('quota') || dataErr.message?.includes('rate limit'))) {
+          console.error("Rate limit detected in error response.");
+          return rateLimitItinerary(args);
+        }
         // Log raw response for debugging (already logged in extract function), return fallback
         console.error("No content returned from Gemini. Returning fallback itinerary.");
         return fallbackItinerary(args);
@@ -172,6 +292,15 @@ export const generateItinerary = action({
 
       try {
         let cleanContent = cleanAndExtractJson(content);
+
+        // Enhanced logging to debug JSON parsing issues
+        console.log("=== AI RESPONSE DEBUG ===");
+        console.log("Raw content length:", content.length);
+        console.log("Raw content (first 500 chars):", content.substring(0, 500));
+        console.log("Cleaned content length:", cleanContent.length);
+        console.log("Cleaned content:", cleanContent);
+        console.log("========================");
+
         const itinerary = JSON.parse(cleanContent);
 
         if (itinerary.days && Array.isArray(itinerary.days)) {
@@ -196,10 +325,11 @@ export const generateItinerary = action({
         return itinerary;
       } catch (parseError) {
         // Parsing failed - log raw content and return structured fallback with extracted activities
-        console.error("JSON parsing error (itinerary). Raw content snippet:", {
-          snippet: content?.substring(0, 1000),
-          parseError: (parseError as Error).message,
-        });
+        console.error("=== JSON PARSING FAILED ===");
+        console.error("Parse Error:", (parseError as Error).message);
+        console.error("Raw content (full):", content);
+        console.error("Cleaned content that failed to parse:", cleanAndExtractJson(content));
+        console.error("===========================");
 
         const lines = (content || "").split("\n").filter((line: any) => line.trim());
         const activities = lines.slice(0, 5).map((line: string) => line.replace(/^\d+\.?\s*/, "").trim());
@@ -229,8 +359,8 @@ export const generateItinerary = action({
 export const chatWithAI = action({
   args: { message: v.string(), context: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    if (!GEMINI_API_KEY) {
-      console.error("Missing GEMINI_API_KEY environment variable. chatWithAI cannot call Gemini API.");
+    if (GEMINI_API_KEYS.length === 0) {
+      console.error("No GEMINI_API_KEY configured. chatWithAI cannot call Gemini API.");
       return "AI service unavailable. Please try again later.";
     }
 
@@ -246,14 +376,14 @@ export const chatWithAI = action({
     ${args.context ? `Context: ${args.context}` : ""} `;
 
     try {
-      const response = await fetch(GEMINI_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `${systemPrompt} \n\nUser: ${args.message} ` }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
-        }),
+      const response = await callGeminiWithKeyRotation({
+        contents: [{ parts: [{ text: `${systemPrompt} \n\nUser: ${args.message} ` }] }],
+        generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
       });
+
+      if (!response) {
+        return "AI service is temporarily busy. Please try again in a moment.";
+      }
 
       const { text: content } = await extractAICandidateText(response);
       if (!content) {
@@ -270,8 +400,8 @@ export const chatWithAI = action({
 export const getDestinationInfo = action({
   args: { destination: v.string() },
   handler: async (ctx, args) => {
-    if (!GEMINI_API_KEY) {
-      console.error("Missing GEMINI_API_KEY environment variable. getDestinationInfo cannot call Gemini API.");
+    if (GEMINI_API_KEYS.length === 0) {
+      console.error("No GEMINI_API_KEY configured. getDestinationInfo cannot call Gemini API.");
       return {
         bestTime: "October to March",
         attractions: ["Information temporarily unavailable"],
@@ -302,14 +432,21 @@ Format as JSON:
 } `;
 
     try {
-      const response = await fetch(GEMINI_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are a travel expert specializing in Indian destinations.Provide accurate, practical information.\n\n${prompt} ` }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
-        }),
+      const response = await callGeminiWithKeyRotation({
+        contents: [{ parts: [{ text: `You are a travel expert specializing in Indian destinations.Provide accurate, practical information.\n\n${prompt} ` }] }],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
       });
+
+      if (!response) {
+        console.error("All API keys exhausted for getDestinationInfo. Returning fallback values.");
+        return {
+          bestTime: "October to March",
+          attractions: ["Information available on request"],
+          budgetEstimate: { budget: 5000, midRange: 12000, luxury: 25000 },
+          cuisine: ["Local specialties"],
+          transportation: "Information temporarily unavailable",
+        };
+      }
 
       const { text: content } = await extractAICandidateText(response);
       if (!content) {
