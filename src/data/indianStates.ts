@@ -433,8 +433,13 @@ export const allIndianStates: IndianState[] = [
   }
 ];
 
+const normalizeStateCode = (code: string) => {
+  if (code === 'UT') return 'UK';
+  return code;
+};
+
 export const getStateByCode = (code: string): IndianState | undefined => {
-  return allIndianStates.find(state => state.code === code);
+  return allIndianStates.find(state => state.code === normalizeStateCode(code));
 };
 
 export const getStatesByRegion = (region: string): IndianState[] => {

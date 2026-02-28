@@ -40,9 +40,11 @@ const applicationTables = {
     imageName: v.optional(v.string()),
     imageSize: v.optional(v.number()),
     imageType: v.optional(v.string()),
+    verificationToken: v.optional(v.string()),
   }).index("by_author", ["authorId"])
     .index("by_status", ["status"])
-    .index("by_destination", ["destination"]),
+    .index("by_destination", ["destination"])
+    .index("by_token", ["verificationToken"]),
 
   // Trip join requests
   tripRequests: defineTable({

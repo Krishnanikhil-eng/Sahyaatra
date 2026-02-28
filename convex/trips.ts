@@ -3,13 +3,13 @@ import { v } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getAllTrips = query({
-  args: { 
+  args: {
     limit: v.optional(v.number()),
     status: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     let trips;
-    
+
     if (args.status) {
       trips = await ctx.db
         .query("trips")
@@ -31,7 +31,7 @@ export const getAllTrips = query({
           .query("profiles")
           .withIndex("by_user", (q) => q.eq("userId", trip.authorId))
           .unique();
-        
+
         return {
           ...trip,
           author: {
@@ -120,7 +120,7 @@ export const getUserTrips = query({
 });
 
 export const searchTrips = query({
-  args: { 
+  args: {
     destination: v.optional(v.string()),
     maxBudget: v.optional(v.number()),
     interests: v.optional(v.array(v.string())),
@@ -130,7 +130,7 @@ export const searchTrips = query({
 
     // Filter by destination
     if (args.destination) {
-      trips = trips.filter(trip => 
+      trips = trips.filter(trip =>
         trip.destination.toLowerCase().includes(args.destination!.toLowerCase())
       );
     }
@@ -142,8 +142,8 @@ export const searchTrips = query({
 
     // Filter by interests
     if (args.interests && args.interests.length > 0) {
-      trips = trips.filter(trip => 
-        trip.interests.some(interest => 
+      trips = trips.filter(trip =>
+        trip.interests.some(interest =>
           args.interests!.includes(interest)
         )
       );
@@ -157,7 +157,7 @@ export const searchTrips = query({
           .query("profiles")
           .withIndex("by_user", (q) => q.eq("userId", trip.authorId))
           .unique();
-        
+
         return {
           ...trip,
           author: {
@@ -169,5 +169,70 @@ export const searchTrips = query({
     );
 
     return tripsWithAuthors;
+  },
+});
+
+export const getTripVerificationToken = mutation({
+  args: { tripId: v.id("trips") },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Must be logged in");
+    }
+
+    const trip = await ctx.db.get(args.tripId);
+    if (!trip) {
+      throw new Error("Trip not found");
+    }
+
+    // Check if user is the author or an accepted member
+    const isAuthor = trip.authorId === userId;
+    const acceptedRequest = await ctx.db
+      .query("tripRequests")
+      .withIndex("by_trip_and_requester", (q) =>
+        q.eq("tripId", args.tripId).eq("requesterId", userId)
+      )
+      .filter((q) => q.eq(q.field("status"), "accepted"))
+      .unique();
+
+    if (!isAuthor && !acceptedRequest) {
+      throw new Error("Not authorized to view verification QR");
+    }
+
+    // Check if there are at least 2 members
+    if (trip.currentTravelers < 2) {
+      return { success: false, message: "Trip must have at least 2 members to generate verification QR" };
+    }
+
+    // Return existing token or generate a new one
+    if (trip.verificationToken) {
+      return { success: true, token: trip.verificationToken };
+    }
+
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    await ctx.db.patch(args.tripId, {
+      verificationToken: token,
+    });
+
+    return { success: true, token };
+  },
+});
+
+export const getTripByVerificationToken = query({
+  args: { token: v.string() },
+  handler: async (ctx, args) => {
+    const trip = await ctx.db
+      .query("trips")
+      .withIndex("by_token", (q) => q.eq("verificationToken", args.token))
+      .unique();
+
+    if (!trip || trip.status === "completed") { // Or handle "cancelled" if status allows
+      return null;
+    }
+
+    return {
+      destination: trip.destination,
+      status: trip.status,
+    };
   },
 });

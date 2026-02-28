@@ -18,6 +18,7 @@ import { Budget } from "./pages/Budget";
 import { Profile } from "./pages/Profile";
 import { Demo } from "./pages/Demo";
 import SignInPage from "./pages/SignInPage";
+import { VerifyTrip } from "./pages/VerifyTrip";
 
 export function AppRoutes() {
   const location = useLocation();
@@ -41,6 +42,7 @@ export function AppRoutes() {
           <Route path="/chat/:tripId" element={<Chat />} />
           <Route path="/budget/:tripId" element={<Budget />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/trip/verify/:token" element={<VerifyTrip />} />
           <Route path="/demo" element={<Demo />} />
           <Route path="/signin" element={<SignInPage />} />
         </Routes>

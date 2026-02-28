@@ -3,21 +3,25 @@ import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { Send, Users, Sparkles, Bot } from "lucide-react";
+import { Send, Users, Sparkles, Bot, QrCode, X } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 export function Chat() {
   const { tripId } = useParams<{ tripId: string }>();
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+
   const messages = useQuery(api.messages.getTripMessages, { tripId: tripId as any });
   const participants = useQuery(api.messages.getTripParticipants, { tripId: tripId as any });
   const sendMessage = useMutation(api.messages.sendMessage);
   const trip = useQuery(api.trips.getTripById, { tripId: tripId as any });
   const chatWithAI = useAction(api.ai.chatWithAI);
-  
+
   const [aiMessage, setAiMessage] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [verificationToken, setVerificationToken] = useState<string | null>(null);
+  const generateToken = useMutation(api.trips.getTripVerificationToken);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -44,28 +48,51 @@ export function Chat() {
 
   const handleAskAI = async () => {
     if (!aiMessage.trim()) return;
-    
+
     setIsAiLoading(true);
     try {
       const context = trip ? `Trip to ${trip.destination} from ${trip.startDate} to ${trip.endDate}. Budget: ₹${trip.budget}. Interests: ${trip.interests.join(', ')}.` : '';
-      
+
       const response = await chatWithAI({
         message: aiMessage,
         context: context,
       });
-      
+
       // Send AI response as a system message
       await sendMessage({
         tripId: tripId as any,
         content: `🤖 AI Assistant: ${response}`,
       });
-      
+
       setAiMessage("");
       toast.success("AI response added to chat!");
     } catch (error: any) {
       toast.error("Failed to get AI response");
     } finally {
       setIsAiLoading(false);
+    }
+  };
+
+  const handleShowQR = async () => {
+    const publicBaseUrl = import.meta.env.VITE_PUBLIC_BASE_URL;
+
+    // Check if PUBLIC_BASE_URL is missing as per instructions
+    if (!publicBaseUrl) {
+      console.error("QR Code Error: VITE_PUBLIC_BASE_URL is missing in environment variables. QR cannot be generated for mobile scanning.");
+      toast.error("Trip verification is temporarily unavailable. Please contact support.");
+      return;
+    }
+
+    try {
+      const result = await generateToken({ tripId: tripId as any });
+      if (result.success && result.token) {
+        setVerificationToken(result.token);
+        setShowQrModal(true);
+      } else {
+        toast.error(result.message || "Cannot generate verification QR");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to generate verification QR");
     }
   };
 
@@ -115,6 +142,18 @@ export function Chat() {
               </div>
             ))}
           </div>
+
+          {(participants?.length || 0) >= 2 && (
+            <div className="mt-8 pt-6 border-t">
+              <button
+                onClick={handleShowQR}
+                className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
+              >
+                <QrCode className="w-4 h-4" />
+                <span className="text-sm font-medium">Trip Verification QR</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Chat Area */}
@@ -200,6 +239,48 @@ export function Chat() {
           </div>
         </div>
       </div>
+
+      {/* QR Code Modal */}
+      {showQrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 relative">
+            <button
+              onClick={() => setShowQrModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Trip Verification</h3>
+              <p className="text-sm text-gray-600 mb-6 font-medium">
+                Ask a co-traveler to scan this QR to verify the trip.
+              </p>
+
+              <div className="bg-white p-4 rounded-lg border-2 border-dashed border-gray-100 inline-block mb-6">
+                {/* 
+                  Using VITE_PUBLIC_BASE_URL (e.g. ngrok) to ensure the QR code 
+                  is scannable from mobile devices during development. 
+                  Localhost is not accessible from external phone cameras.
+                */}
+                <QRCodeSVG
+                  value={`${import.meta.env.VITE_PUBLIC_BASE_URL}/trip/verify/${verificationToken}`}
+                  size={200}
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+
+              <div className="bg-blue-50 p-3 rounded-lg flex items-start space-x-2 text-left">
+                <div className="w-2 h-2 mt-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+                <p className="text-xs text-blue-700 italic">
+                  This QR contains a secure verification link for this trip only.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
