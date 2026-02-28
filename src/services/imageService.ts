@@ -52,9 +52,24 @@ function convertPexelsToUnsplashFormat(photo: PexelsPhoto): UnsplashImage {
 export class ImageService {
   private static cache = new Map<string, UnsplashImage[]>();
 
-  static async getPlaceImages(placeName: string, count: number = 3): Promise<UnsplashImage[]> {
-    const cacheKey = `place_${placeName}_${count}`;
-    
+  private static fallbackPool: string[] = [
+    'https://images.unsplash.com/photo-1524492412937-b28074a5d7da', // Taj Mahal
+    'https://images.unsplash.com/photo-1514222134-b57cbb8ce073', // Kerala Backwaters
+    'https://images.unsplash.com/photo-1506461883276-594a12b11cf3', // Varanasi
+    'https://images.unsplash.com/photo-1596422846543-75c6fc18a5bf', // Hawa Mahal
+    'https://images.unsplash.com/photo-1548013146-72479768bbaa', // India Gate
+    'https://images.unsplash.com/photo-1587474260584-1f35a74a8b76', // Qutub Minar
+    'https://images.unsplash.com/photo-1477587458883-47145ed94245', // Meenakshi Temple
+    'https://images.unsplash.com/photo-1496372412473-e8548ffd82bc', // Shimla
+    'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4', // Jaipur
+    'https://images.unsplash.com/photo-1578351649132-80ce5a00ddbc', // Lotus Temple
+    'https://images.unsplash.com/photo-1582510003544-4d00b7f74220', // Mumbai Marine Drive
+    'https://images.unsplash.com/photo-1590050752117-23a9d7fc2140', // Goa
+  ];
+
+  static async getPlaceImages(placeName: string, count: number = 3, category?: string): Promise<UnsplashImage[]> {
+    const cacheKey = `place_${placeName}_${count}_${category || 'none'}`;
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
@@ -62,7 +77,7 @@ export class ImageService {
     try {
       // Try Pexels first (primary source)
       const pexelsResponse = await fetch(
-        `${PEXELS_API_URL}/search?query=${encodeURIComponent(placeName + ' tourist spot india landmark monument historical architecture')}&per_page=${count}&orientation=landscape`,
+        `${PEXELS_API_URL}/search?query=${encodeURIComponent(placeName + ' india tourism')}&per_page=${count + 5}&orientation=landscape`,
         {
           headers: {
             'Authorization': PEXELS_API_KEY,
@@ -72,49 +87,82 @@ export class ImageService {
 
       if (pexelsResponse.ok) {
         const pexelsData = await pexelsResponse.json();
-        const pexelPhotos = pexelsData.photos || [];
-        const images = pexelPhotos.map(convertPexelsToUnsplashFormat);
-        this.cache.set(cacheKey, images);
-        return images;
+        if (pexelsData.photos && pexelsData.photos.length > 0) {
+          const photos = pexelsData.photos as PexelsPhoto[];
+          const shiftedPhotos = this.stableShuffle(photos, placeName).slice(0, count);
+          const images = shiftedPhotos.map(convertPexelsToUnsplashFormat);
+          this.cache.set(cacheKey, images);
+          return images;
+        }
       }
 
-      // If Pexels fails, try Unsplash as fallback
+      // If Pexels fails, try Unsplash
       const unsplashResponse = await fetch(
-        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(placeName + ' tourist spot india landmark heritage')}&per_page=${count}&orientation=landscape`,
+        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(placeName + ' india tourism')}&per_page=${count + 5}&orientation=landscape`,
         {
           headers: {
-            'Authorization': PEXELS_API_KEY,
+            'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
           },
         }
       );
 
-      if (!pexelsResponse.ok) {
-        throw new Error(`Failed to fetch images from both APIs`);
+      if (unsplashResponse.ok) {
+        const unsplashData = await unsplashResponse.json();
+        if (unsplashData.results && unsplashData.results.length > 0) {
+          const results = unsplashData.results as any[];
+          const shiftedResults = this.stableShuffle(results, placeName).slice(0, count);
+          const images = shiftedResults.map((photo: any) => ({
+            id: photo.id,
+            urls: photo.urls,
+            alt_description: photo.alt_description || placeName,
+            user: { name: photo.user.name }
+          }));
+          this.cache.set(cacheKey, images);
+          return images;
+        }
       }
 
-      const pexelsData = await pexelsResponse.json();
-      const pexelPhotos = pexelsData.photos || [];
-      const images = pexelPhotos.map(convertPexelsToUnsplashFormat);
-      
-      this.cache.set(cacheKey, images);
-      return images;
+      // Mid-tier fallback: search by category but pick based on placeName seed
+      if (category) {
+        const categoryImages = await this.getCategoryImages(category, count, placeName);
+        if (categoryImages.length > 0) {
+          this.cache.set(cacheKey, categoryImages);
+          return categoryImages;
+        }
+      }
+
+      throw new Error(`No specific images found for ${placeName}`);
     } catch (error) {
-      console.error('Error fetching place images from both Unsplash and Pexels:', error);
-      return this.getFallbackImages(count);
+      console.error('Error in getPlaceImages:', error);
+      return this.getFallbackImages(count, placeName);
     }
+  }
+
+  // Stable shuffle based on a seed string so the same place always gets the same (but varied) image
+  private static stableShuffle<T>(array: T[], seed: string): T[] {
+    const result = [...array];
+    if (result.length <= 1) return result;
+
+    const hash = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    // Use the hash to shift the array
+    const shift = hash % result.length;
+    for (let i = 0; i < shift; i++) {
+      const first = result.shift();
+      if (first) result.push(first);
+    }
+    return result;
   }
 
   static async getStateImages(stateName: string, count: number = 1): Promise<UnsplashImage[]> {
     const cacheKey = `state_${stateName}_${count}`;
-    
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
 
     try {
-      // Try Unsplash first
       const unsplashResponse = await fetch(
-        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(stateName + ' india tourism landscape')}&per_page=${count}&orientation=landscape`,
+        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(stateName + ' india tourism landscape')}&per_page=10&orientation=landscape`,
         {
           headers: {
             'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
@@ -124,14 +172,16 @@ export class ImageService {
 
       if (unsplashResponse.ok) {
         const data = await unsplashResponse.json();
-        const images = data.results || [];
-        this.cache.set(cacheKey, images);
-        return images;
+        if (data.results && data.results.length > 0) {
+          const results = data.results as UnsplashImage[];
+          const images = this.stableShuffle(results, stateName).slice(0, count);
+          this.cache.set(cacheKey, images);
+          return images;
+        }
       }
 
-      // If Unsplash fails, try Pexels
       const pexelsResponse = await fetch(
-        `${PEXELS_API_URL}/search?query=${encodeURIComponent(stateName + ' india tourism landscape')}&per_page=${count}&orientation=landscape`,
+        `${PEXELS_API_URL}/search?query=${encodeURIComponent(stateName + ' india tourism')}&per_page=10&orientation=landscape`,
         {
           headers: {
             'Authorization': PEXELS_API_KEY,
@@ -139,33 +189,32 @@ export class ImageService {
         }
       );
 
-      if (!pexelsResponse.ok) {
-        throw new Error(`Failed to fetch images from both APIs`);
+      if (pexelsResponse.ok) {
+        const data = await pexelsResponse.json();
+        const photos = (data.photos || []) as PexelsPhoto[];
+        const shifted = this.stableShuffle(photos, stateName).slice(0, count);
+        const images = shifted.map(convertPexelsToUnsplashFormat);
+        this.cache.set(cacheKey, images);
+        return images;
       }
 
-      const data = await pexelsResponse.json();
-      const pexelPhotos = data.photos || [];
-      const images = pexelPhotos.map(convertPexelsToUnsplashFormat);
-      
-      this.cache.set(cacheKey, images);
-      return images;
+      return this.getFallbackImages(count, stateName);
     } catch (error) {
-      console.error('Error fetching state images from both Unsplash and Pexels:', error);
-      return this.getFallbackImages(count);
+      console.error('Error fetching state images:', error);
+      return this.getFallbackImages(count, stateName);
     }
   }
 
-  static async getCategoryImages(category: string, count: number = 1): Promise<UnsplashImage[]> {
-    const cacheKey = `category_${category}_${count}`;
-    
+  static async getCategoryImages(category: string, count: number = 1, seed?: string): Promise<UnsplashImage[]> {
+    const cacheKey = `category_${category}_${count}_${seed || 'none'}`;
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
 
     try {
-      // Try Unsplash first
       const unsplashResponse = await fetch(
-        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(category + ' india tourism')}&per_page=${count}&orientation=landscape`,
+        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(category + ' india tourism')}&per_page=15&orientation=landscape`,
         {
           headers: {
             'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
@@ -175,48 +224,36 @@ export class ImageService {
 
       if (unsplashResponse.ok) {
         const data = await unsplashResponse.json();
-        const images = data.results || [];
-        this.cache.set(cacheKey, images);
-        return images;
-      }
-
-      // If Unsplash fails, try Pexels
-      const pexelsResponse = await fetch(
-        `${PEXELS_API_URL}/search?query=${encodeURIComponent(category + ' india tourism')}&per_page=${count}&orientation=landscape`,
-        {
-          headers: {
-            'Authorization': PEXELS_API_KEY,
-          },
+        if (data.results && data.results.length > 0) {
+          const results = data.results as any[];
+          const shifted = this.stableShuffle(results, seed || category).slice(0, count);
+          const images = shifted.map((photo: any) => ({
+            id: photo.id,
+            urls: photo.urls,
+            alt_description: photo.alt_description || category,
+            user: { name: photo.user.name }
+          }));
+          this.cache.set(cacheKey, images);
+          return images;
         }
-      );
-
-      if (!pexelsResponse.ok) {
-        throw new Error(`Failed to fetch images from both APIs`);
       }
 
-      const data = await pexelsResponse.json();
-      const pexelPhotos = data.photos || [];
-      const images = pexelPhotos.map(convertPexelsToUnsplashFormat);
-      
-      this.cache.set(cacheKey, images);
-      return images;
+      return this.getFallbackImages(count, seed || category);
     } catch (error) {
-      console.error('Error fetching category images from both Unsplash and Pexels:', error);
-      return this.getFallbackImages(count);
+      return this.getFallbackImages(count, seed || category);
     }
   }
 
   static async getBackgroundImages(count: number = 1): Promise<UnsplashImage[]> {
     const cacheKey = `background_${count}`;
-    
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
 
     try {
-      // Try Unsplash first
       const unsplashResponse = await fetch(
-        `${UNSPLASH_API_URL}/photos/random?query=india tourism landscape beautiful&count=${count}&orientation=landscape`,
+        `${UNSPLASH_API_URL}/photos/random?query=india tourism landscape&count=${count}&orientation=landscape`,
         {
           headers: {
             'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
@@ -231,48 +268,37 @@ export class ImageService {
         return formattedImages;
       }
 
-      // If Unsplash fails, try Pexels
-      const pexelsResponse = await fetch(
-        `${PEXELS_API_URL}/curated?per_page=${count}`,
-        {
-          headers: {
-            'Authorization': PEXELS_API_KEY,
-          },
-        }
-      );
-
-      if (!pexelsResponse.ok) {
-        throw new Error(`Failed to fetch images from both APIs`);
-      }
-
-      const data = await pexelsResponse.json();
-      const pexelPhotos = data.photos || [];
-      const images = pexelPhotos.map(convertPexelsToUnsplashFormat);
-      
-      this.cache.set(cacheKey, images);
-      return images;
+      return this.getFallbackImages(count);
     } catch (error) {
-      console.error('Error fetching background images from both Unsplash and Pexels:', error);
       return this.getFallbackImages(count);
     }
   }
 
-  private static getFallbackImages(count: number): UnsplashImage[] {
+  private static getFallbackImages(count: number, seed?: string): UnsplashImage[] {
     const fallbackImages: UnsplashImage[] = [];
-    
+
+    // Hash the seed to pick a starting point in the pool
+    let startIndex = 0;
+    if (seed) {
+      startIndex = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % this.fallbackPool.length;
+    } else {
+      startIndex = Math.floor(Math.random() * this.fallbackPool.length);
+    }
+
     for (let i = 0; i < count; i++) {
+      const poolIndex = (startIndex + i) % this.fallbackPool.length;
       fallbackImages.push({
-        id: `fallback_${i}`,
+        id: `fallback_${poolIndex}_${i}_${seed || 'noseed'}`,
         urls: {
-          small: `https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&crop=center`,
-          regular: `https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center`,
-          full: `https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=800&fit=crop&crop=center`
+          small: `${this.fallbackPool[poolIndex]}?w=400&h=300&fit=crop&q=80`,
+          regular: `${this.fallbackPool[poolIndex]}?w=800&h=600&fit=crop&q=80`,
+          full: `${this.fallbackPool[poolIndex]}?w=1200&h=800&fit=crop&q=80`
         },
         alt_description: 'Beautiful India landscape',
         user: { name: 'Unsplash' }
       });
     }
-    
+
     return fallbackImages;
   }
 

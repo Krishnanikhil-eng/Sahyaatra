@@ -491,8 +491,8 @@ export const getPlaceImages = action({
     const count = args.count || 5;
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL} /search/photos ? query = ${encodeURIComponent(args.placeName + " India tourism")}& per_page=${count}& orientation=landscape`,
-        { headers: { Authorization: `Client - ID ${UNSPLASH_ACCESS_KEY} ` } }
+        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(args.placeName + " India tourism")}&per_page=${count}&orientation=landscape`,
+        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } }
       );
 
       const data = await response.json();
@@ -520,8 +520,8 @@ export const getDestinationImages = action({
     const query = args.category ? `${args.destination} ${args.category} India` : `${args.destination} tourism India`;
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL} /search/photos ? query = ${encodeURIComponent(query)}& per_page=8 & orientation=landscape`,
-        { headers: { Authorization: `Client - ID ${UNSPLASH_ACCESS_KEY} ` } }
+        `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=landscape`,
+        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } }
       );
 
       const data = await response.json();
@@ -549,8 +549,8 @@ export const getRandomTravelImages = action({
     const count = args.count || 10;
     try {
       const response = await fetch(
-        `${UNSPLASH_API_URL} /search/photos ? query = India travel tourism & per_page=${count}& orientation=landscape`,
-        { headers: { Authorization: `Client - ID ${UNSPLASH_ACCESS_KEY} ` } }
+        `${UNSPLASH_API_URL}/search/photos?query=India travel tourism&per_page=${count}&orientation=landscape`,
+        { headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` } }
       );
 
       const data = await response.json();

@@ -31,6 +31,39 @@ interface Place {
   special_notes?: string;
 }
 
+// Add a sub-component for dynamic thumbnails to avoid complex logic in the main component
+function PlaceThumbnail({ placeName, stateName, category, fallbackUrl }: { placeName: string, stateName: string; category: string; fallbackUrl: string }) {
+  const [imageUrl, setImageUrl] = useState<string>(fallbackUrl);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadThumbnail = async () => {
+      try {
+        const images = await ImageService.getPlaceImages(`${placeName} ${stateName}`, 1, category);
+        if (isMounted && images.length > 0) {
+          setImageUrl(images[0].urls.small);
+        }
+      } catch (error) {
+        console.error('Error loading thumbnail for', placeName, error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadThumbnail();
+    return () => { isMounted = false; };
+  }, [placeName, stateName, category]);
+
+  return (
+    <img
+      src={imageUrl}
+      alt={placeName}
+      className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${loading ? 'blur-sm grayscale' : 'blur-0 grayscale-0'}`}
+      loading="lazy"
+    />
+  );
+}
+
 export function EnhancedStatePlaces() {
   const { stateCode } = useParams<{ stateCode: string }>();
   const navigate = useNavigate();
@@ -47,7 +80,7 @@ export function EnhancedStatePlaces() {
   const getStateDetails = (code: string) => {
     const state = getStateByCode(code);
     if (!state) return null;
-    
+
     return {
       name: state.name,
       description: state.description,
@@ -151,7 +184,7 @@ export function EnhancedStatePlaces() {
       <div className="relative h-96 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 overflow-hidden">
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        
+
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
@@ -174,10 +207,10 @@ export function EnhancedStatePlaces() {
               <ArrowLeft className="w-5 h-5 mr-2" />
               Back to States
             </button>
-            
+
             <h1 className="text-5xl font-bold mb-4">{stateInfo.name}</h1>
             <p className="text-xl text-white/90 mb-6 max-w-2xl">{stateInfo.description}</p>
-            
+
             <div className="flex items-center space-x-6">
               <div className="flex items-center text-white/80">
                 <MapPin className="w-6 h-6 mr-2" />
@@ -230,21 +263,19 @@ export function EnhancedStatePlaces() {
             <div className="flex border border-gray-300 rounded-xl overflow-hidden">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-4 py-3 border-r border-gray-300 transition-colors ${
-                  viewMode === 'grid' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-3 border-r border-gray-300 transition-colors ${viewMode === 'grid'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-3 transition-colors ${
-                  viewMode === 'list' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-3 transition-colors ${viewMode === 'list'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 <List className="w-5 h-5" />
               </button>
@@ -281,10 +312,11 @@ export function EnhancedStatePlaces() {
               >
                 {/* Place Image */}
                 <div className="relative h-56 overflow-hidden">
-                  <img
-                    src={`https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&crop=center&q=80&auto=format&ixlib=rb-4.0.3`}
-                    alt={place.place_name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  <PlaceThumbnail
+                    placeName={place.place_name}
+                    stateName={place.state}
+                    category={place.category}
+                    fallbackUrl={`https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&crop=center&q=80&auto=format&ixlib=rb-4.0.3`}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   {/* Category Badge */}
@@ -392,211 +424,221 @@ export function EnhancedStatePlaces() {
         {/* Place Details Modal/Section */}
         {selectedPlace && (
           <div
-            className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4"
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
             onClick={() => setSelectedPlace(null)}
           >
             <div
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden relative"
+              className="bg-gray-50 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden relative"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header Image */}
-              <div className="relative h-56 bg-gray-100">
-                <img
-                  src={selectedPlaceImage ? ImageService.getOptimizedImageUrl(selectedPlaceImage, 'full') : stateInfo?.imageUrl || `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop&crop=center&q=80&auto=format&ixlib=rb-4.0.3`}
-                  alt={selectedPlace.place_name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = stateInfo?.imageUrl || `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop&crop=center&q=80&auto=format&ixlib=rb-4.0.3`;
-                  }}
-                />
-                <button
-                  className="absolute top-3 right-3 bg-white/90 hover:bg-white text-gray-700 rounded-full w-9 h-9 flex items-center justify-center shadow"
-                  onClick={() => setSelectedPlace(null)}
-                  aria-label="Close"
-                >
-                  &times;
-                </button>
-                <div className="absolute bottom-3 left-3 flex items-center">
-                  <span className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full">{selectedPlace.category}</span>
-                </div>
-              </div>
+              {/* Close Button - Fixed to Top Right of Modal */}
+              <button
+                className="absolute top-4 right-4 z-20 bg-black/40 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors text-xl leading-none pt-0.5"
+                onClick={() => setSelectedPlace(null)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
 
-              <div className="p-6">
-                {/* Title and Location */}
-                <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">{selectedPlace.place_name}</h2>
-                  <div className="flex items-center text-gray-600 mt-1">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    <span>{selectedPlace.state}</span>
+              <div className="overflow-y-auto flex-1 w-full flex flex-col">
+                {/* Prominent Header Image Banner */}
+                <div className="relative h-72 sm:h-96 md:h-[45vh] bg-gray-900 shrink-0 w-full group">
+                  <img
+                    src={selectedPlaceImage ? ImageService.getOptimizedImageUrl(selectedPlaceImage, 'full') : (selectedPlace.place_name ? `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop&crop=center&q=80&auto=format&ixlib=rb-4.0.3` : stateInfo?.imageUrl)}
+                    alt={selectedPlace.place_name}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = stateInfo?.imageUrl || `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop&crop=center&q=80&auto=format&ixlib=rb-4.0.3`;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                  {/* Banner Content Overlaid on Image */}
+                  <div className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8 text-white z-10">
+                    <div className="flex items-center mb-3">
+                      <span className="px-3 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-sm rounded-full font-medium shadow-sm border border-white/10">
+                        {selectedPlace.category}
+                      </span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2 tracking-tight text-white drop-shadow-md">
+                      {selectedPlace.place_name}
+                    </h2>
+                    <div className="flex items-center text-white/90">
+                      <MapPin className="w-5 h-5 md:w-6 md:h-6 mr-2" />
+                      <span className="text-lg md:text-xl font-medium drop-shadow-sm">{selectedPlace.state}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Quick Info Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                  {selectedPlace.timings && (
-                    <div className="flex items-center p-3 rounded-lg bg-gray-50">
-                      <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                      <div>
-                        <p className="text-xs text-gray-500">Timings</p>
-                        <p className="text-sm font-medium">{selectedPlace.timings}</p>
+                {/* Main Content Area */}
+                <div className="p-6 md:p-8 bg-white relative z-0 flex-1">
+                  {/* Quick Info Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    {selectedPlace.timings && (
+                      <div className="flex items-center p-3 rounded-lg bg-gray-50">
+                        <Clock className="w-4 h-4 mr-2 text-blue-600" />
+                        <div>
+                          <p className="text-xs text-gray-500">Timings</p>
+                          <p className="text-sm font-medium">{selectedPlace.timings}</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {selectedPlace.entry_fee && (
-                    <div className="flex items-center p-3 rounded-lg bg-gray-50">
-                      <DollarSign className="w-4 h-4 mr-2 text-green-600" />
-                      <div>
-                        <p className="text-xs text-gray-500">Entry Fee</p>
-                        <p className="text-sm font-medium">{selectedPlace.entry_fee}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.best_time && (
-                    <div className="flex items-center p-3 rounded-lg bg-gray-50">
-                      <Star className="w-4 h-4 mr-2 text-yellow-600" />
-                      <div>
-                        <p className="text-xs text-gray-500">Best Time</p>
-                        <p className="text-sm font-medium">{selectedPlace.best_time}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Description / Notes */}
-                {selectedPlace.description && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">About</h3>
-                    <p className="text-gray-700 leading-relaxed">{selectedPlace.description}</p>
-                  </div>
-                )}
-                {selectedPlace.special_notes && (
-                  <div className="mb-4 p-3 rounded-lg bg-blue-50 text-blue-800">
-                    {selectedPlace.special_notes}
-                  </div>
-                )}
-
-                {/* How to Reach */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {selectedPlace.nearest_railway && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Train className="w-5 h-5 mr-3 text-blue-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Nearest Railway</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.nearest_railway}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.nearest_bus && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Bus className="w-5 h-5 mr-3 text-green-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Nearest Bus</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.nearest_bus}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.nearest_airport && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Plane className="w-5 h-5 mr-3 text-purple-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Nearest Airport</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.nearest_airport}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.metro_station && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Train className="w-5 h-5 mr-3 text-orange-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Metro Station</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.metro_station}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Facilities */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {selectedPlace.accessibility && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Accessibility className="w-5 h-5 mr-3 text-blue-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Accessibility</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.accessibility}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.guided_tours && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Users className="w-5 h-5 mr-3 text-green-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Guided Tours</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.guided_tours}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.parking && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <Car className="w-5 h-5 mr-3 text-purple-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Parking</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.parking}</p>
-                      </div>
-                    </div>
-                  )}
-                  {selectedPlace.nearby_amenities && (
-                    <div className="flex items-start p-3 rounded-lg bg-gray-50">
-                      <MapPin className="w-5 h-5 mr-3 text-orange-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Nearby Amenities</p>
-                        <p className="text-sm text-gray-700">{selectedPlace.nearby_amenities}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* External Links */}
-                {(selectedPlace.official_website || selectedPlace.wikipedia) && (
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {selectedPlace.official_website && (
-                      <a
-                        href={selectedPlace.official_website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" /> Official Website
-                      </a>
                     )}
-                    {selectedPlace.wikipedia && (
-                      <a
-                        href={selectedPlace.wikipedia}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" /> Wikipedia
-                      </a>
+                    {selectedPlace.entry_fee && (
+                      <div className="flex items-center p-3 rounded-lg bg-gray-50">
+                        <DollarSign className="w-4 h-4 mr-2 text-green-600" />
+                        <div>
+                          <p className="text-xs text-gray-500">Entry Fee</p>
+                          <p className="text-sm font-medium">{selectedPlace.entry_fee}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.best_time && (
+                      <div className="flex items-center p-3 rounded-lg bg-gray-50">
+                        <Star className="w-4 h-4 mr-2 text-yellow-600" />
+                        <div>
+                          <p className="text-xs text-gray-500">Best Time</p>
+                          <p className="text-sm font-medium">{selectedPlace.best_time}</p>
+                        </div>
+                      </div>
                     )}
                   </div>
-                )}
 
-                {/* Actions */}
-                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <button
-                    onClick={() => navigate(`/places/detail/${selectedPlace._id}`)}
-                    className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" /> View Full Details
-                  </button>
-                  <div>
-                    <h3 className="text-base font-semibold mb-2">Find Co-Travelers</h3>
-                    <CoTravelerButton
-                      placeId={selectedPlace._id}
-                      stateName={selectedPlace.state}
-                      placeName={selectedPlace.place_name}
-                    />
+                  {/* Description / Notes */}
+                  {selectedPlace.description && (
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">About</h3>
+                      <p className="text-gray-700 leading-relaxed">{selectedPlace.description}</p>
+                    </div>
+                  )}
+                  {selectedPlace.special_notes && (
+                    <div className="mb-4 p-3 rounded-lg bg-blue-50 text-blue-800">
+                      {selectedPlace.special_notes}
+                    </div>
+                  )}
+
+                  {/* How to Reach */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {selectedPlace.nearest_railway && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Train className="w-5 h-5 mr-3 text-blue-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Nearest Railway</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.nearest_railway}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.nearest_bus && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Bus className="w-5 h-5 mr-3 text-green-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Nearest Bus</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.nearest_bus}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.nearest_airport && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Plane className="w-5 h-5 mr-3 text-purple-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Nearest Airport</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.nearest_airport}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.metro_station && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Train className="w-5 h-5 mr-3 text-orange-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Metro Station</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.metro_station}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Facilities */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {selectedPlace.accessibility && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Accessibility className="w-5 h-5 mr-3 text-blue-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Accessibility</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.accessibility}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.guided_tours && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Users className="w-5 h-5 mr-3 text-green-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Guided Tours</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.guided_tours}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.parking && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <Car className="w-5 h-5 mr-3 text-purple-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Parking</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.parking}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedPlace.nearby_amenities && (
+                      <div className="flex items-start p-3 rounded-lg bg-gray-50">
+                        <MapPin className="w-5 h-5 mr-3 text-orange-600 mt-0.5" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Nearby Amenities</p>
+                          <p className="text-sm text-gray-700">{selectedPlace.nearby_amenities}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* External Links */}
+                  {(selectedPlace.official_website || selectedPlace.wikipedia) && (
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {selectedPlace.official_website && (
+                        <a
+                          href={selectedPlace.official_website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" /> Official Website
+                        </a>
+                      )}
+                      {selectedPlace.wikipedia && (
+                        <a
+                          href={selectedPlace.wikipedia}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" /> Wikipedia
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button
+                      onClick={() => navigate(`/places/detail/${selectedPlace._id}`)}
+                      className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" /> View Full Details
+                    </button>
+                    <div>
+                      <h3 className="text-base font-semibold mb-2">Find Co-Travelers</h3>
+                      <CoTravelerButton
+                        placeId={selectedPlace._id}
+                        stateName={selectedPlace.state}
+                        placeName={selectedPlace.place_name}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

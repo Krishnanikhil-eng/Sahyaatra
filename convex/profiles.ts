@@ -7,7 +7,7 @@ export const getProfile = query({
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
     const targetUserId = args.userId || currentUserId;
-    
+
     if (!targetUserId) return null;
 
     const user = await ctx.db.get(targetUserId);
@@ -31,11 +31,17 @@ export const createOrUpdateProfile = mutation({
     bio: v.optional(v.string()),
     interests: v.array(v.string()),
     avatar: v.optional(v.string()),
+    storageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Must be logged in");
+    }
+
+    let avatarUrl = args.avatar;
+    if (args.storageId) {
+      avatarUrl = (await ctx.storage.getUrl(args.storageId)) || args.avatar;
     }
 
     const existingProfile = await ctx.db
@@ -48,7 +54,7 @@ export const createOrUpdateProfile = mutation({
         name: args.name,
         bio: args.bio,
         interests: args.interests,
-        avatar: args.avatar,
+        avatar: avatarUrl,
       });
       return existingProfile._id;
     } else {
@@ -58,7 +64,7 @@ export const createOrUpdateProfile = mutation({
         bio: args.bio,
         interests: args.interests,
         verified: false,
-        avatar: args.avatar,
+        avatar: avatarUrl,
       });
     }
   },
@@ -69,7 +75,7 @@ export const getUserStats = query({
   handler: async (ctx, args) => {
     const currentUserId = await getAuthUserId(ctx);
     const targetUserId = args.userId || currentUserId;
-    
+
     if (!targetUserId) return null;
 
     // Count trips created

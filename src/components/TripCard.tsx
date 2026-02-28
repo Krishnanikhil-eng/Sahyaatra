@@ -82,17 +82,17 @@ export function TripCard({ trip }: TripCardProps) {
           <div className="space-y-2 mb-4">
             <div className="flex items-center text-sm text-gray-500">
               <Calendar className="w-4 h-4 mr-2" />
-              <span>{formatDate(trip.startDate)} - {formatDate(trip.endDate)}</span>
+              <span>{trip.startDate ? formatDate(trip.startDate) : "TBD"} - {trip.endDate ? formatDate(trip.endDate) : "TBD"}</span>
             </div>
             <div className="flex items-center text-sm text-gray-500">
               <Users className="w-4 h-4 mr-2" />
-              <span>{trip.currentTravelers}/{trip.maxTravelers} travelers</span>
+              <span>{trip.currentTravelers || 1}/{trip.maxTravelers || 1} travelers</span>
             </div>
           </div>
 
           {/* Interests */}
           <div className="flex flex-wrap gap-1 mb-4">
-            {trip.interests.slice(0, 3).map((interest, index) => (
+            {(trip.interests || []).slice(0, 3).map((interest, index) => (
               <span
                 key={index}
                 className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
@@ -100,9 +100,9 @@ export function TripCard({ trip }: TripCardProps) {
                 {interest}
               </span>
             ))}
-            {trip.interests.length > 3 && (
+            {(trip.interests?.length || 0) > 3 && (
               <span className="px-2 py-1 bg-gray-50 text-gray-600 text-xs rounded-full">
-                +{trip.interests.length - 3} more
+                +{(trip.interests?.length || 0) - 3} more
               </span>
             )}
           </div>
@@ -110,9 +110,9 @@ export function TripCard({ trip }: TripCardProps) {
           {/* Author */}
           <div className="flex items-center">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-green-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
-              {trip.author.name.charAt(0).toUpperCase()}
+              {(trip.author?.name || "U").charAt(0).toUpperCase()}
             </div>
-            <span className="ml-2 text-sm text-gray-600">by {trip.author.name}</span>
+            <span className="ml-2 text-sm text-gray-600">by {trip.author?.name || "Unknown"}</span>
           </div>
         </div>
       </div>

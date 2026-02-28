@@ -109,13 +109,53 @@ export const getUserTrips = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    const trips = await ctx.db
+    // 1. Get trips created by the user
+    const createdTrips = await ctx.db
       .query("trips")
       .withIndex("by_author", (q) => q.eq("authorId", userId))
       .order("desc")
       .collect();
 
-    return trips;
+    // 2. Get trips joined by the user
+    const joinedRequests = await ctx.db
+      .query("tripRequests")
+      .withIndex("by_requester", (q) => q.eq("requesterId", userId))
+      .filter((q) => q.eq(q.field("status"), "accepted"))
+      .collect();
+
+    const joinedTrips = await Promise.all(
+      joinedRequests.map((req) => ctx.db.get(req.tripId))
+    );
+
+    // Filter out nulls and combine (ensuring no duplicates if user is author and requester somehow)
+    const validJoinedTrips = joinedTrips.filter((t): t is NonNullable<typeof t> => t !== null);
+    const allUserTripsMap = new Map();
+    [...createdTrips, ...validJoinedTrips].forEach(trip => {
+      allUserTripsMap.set(trip._id.toString(), trip);
+    });
+
+    const allUserTrips = Array.from(allUserTripsMap.values());
+
+    // 3. Populate author details for TripCard compatibility
+    const tripsWithAuthors = await Promise.all(
+      allUserTrips.map(async (trip) => {
+        const author = await ctx.db.get(trip.authorId) as any;
+        const profile = await ctx.db
+          .query("profiles")
+          .withIndex("by_user", (q) => q.eq("userId", trip.authorId))
+          .unique();
+
+        return {
+          ...trip,
+          author: {
+            name: profile?.name || author?.name || "Unknown",
+            avatar: profile?.avatar,
+          },
+        };
+      })
+    );
+
+    return tripsWithAuthors.sort((a, b) => b._creationTime - a._creationTime);
   },
 });
 

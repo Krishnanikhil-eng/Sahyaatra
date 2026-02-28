@@ -11,6 +11,7 @@ export function Trips() {
   const [maxBudget, setMaxBudget] = useState<number | undefined>();
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showMyTrips, setShowMyTrips] = useState(false);
   const [stateFilter, setStateFilter] = useState<string | undefined>();
 
   const stateCode = searchParams.get('state');
@@ -31,21 +32,22 @@ export function Trips() {
   });
 
   const allTrips = useQuery(api.trips.getAllTrips, { status: "open" });
+  const myTrips = useQuery(api.trips.getUserTrips);
 
   const interests = [
-    "Adventure", "Culture", "Food", "Nature", "Photography", 
+    "Adventure", "Culture", "Food", "Nature", "Photography",
     "Spiritual", "Beach", "Mountains", "History", "Wildlife"
   ];
 
   const handleInterestToggle = (interest: string) => {
-    setSelectedInterests(prev => 
-      prev.includes(interest) 
+    setSelectedInterests(prev =>
+      prev.includes(interest)
         ? prev.filter(i => i !== interest)
         : [...prev, interest]
     );
   };
 
-  const displayTrips = searchTerm || maxBudget || selectedInterests.length > 0 ? trips : allTrips;
+  const displayTrips = showMyTrips ? myTrips : (searchTerm || maxBudget || selectedInterests.length > 0 ? trips : allTrips);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -57,13 +59,25 @@ export function Trips() {
               <h1 className="text-3xl font-bold text-gray-900">Find Travel Buddies</h1>
               <p className="text-gray-600 mt-1">Discover amazing trips and connect with fellow travelers</p>
             </div>
-            <Link
-              to="/trips/create"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Trip
-            </Link>
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <button
+                onClick={() => setShowMyTrips(!showMyTrips)}
+                className={`inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${showMyTrips
+                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                  }`}
+              >
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                {showMyTrips ? "Showing My Trips" : "My Trips"}
+              </button>
+              <Link
+                to="/trips/create"
+                className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+                Create Trip
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -114,11 +128,10 @@ export function Trips() {
                   <button
                     key={interest}
                     onClick={() => handleInterestToggle(interest)}
-                    className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                      selectedInterests.includes(interest)
+                    className={`px-3 py-1 rounded-full text-sm transition-colors ${selectedInterests.includes(interest)
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     {interest}
                   </button>
