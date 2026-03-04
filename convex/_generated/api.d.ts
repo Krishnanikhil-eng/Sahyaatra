@@ -21,6 +21,7 @@ import type * as importPlaces from "../importPlaces.js";
 import type * as messages from "../messages.js";
 import type * as places from "../places.js";
 import type * as profiles from "../profiles.js";
+import type * as reports from "../reports.js";
 import type * as router from "../router.js";
 import type * as states from "../states.js";
 import type * as storage from "../storage.js";
@@ -44,6 +45,7 @@ declare const fullApi: ApiFromModules<{
   messages: typeof messages;
   places: typeof places;
   profiles: typeof profiles;
+  reports: typeof reports;
   router: typeof router;
   states: typeof states;
   storage: typeof storage;

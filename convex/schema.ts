@@ -140,6 +140,17 @@ const applicationTables = {
   }).index("by_state", ["stateCode"])
     .index("by_category", ["category"])
     .index("by_place_name", ["placeName"]),
+
+  // User submitted issue reports
+  reports: defineTable({
+    name: v.string(),
+    email: v.string(),
+    type: v.string(),
+    description: v.string(),
+    status: v.union(v.literal("pending"), v.literal("in-progress"), v.literal("resolved"), v.literal("ignored")),
+    createdAt: v.number(),
+  }).index("by_status", ["status"])
+    .index("by_created_at", ["createdAt"]),
 };
 
 export default defineSchema({

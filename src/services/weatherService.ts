@@ -19,7 +19,7 @@ export interface WeatherError {
 }
 
 // OpenWeatherMap API configuration
-const API_KEY = 'your_openweather_api_key_here'; // You'll need to get this from OpenWeatherMap
+const API_KEY = '1087a37ed1ba2f0c9527657c587361c2'; // You'll need to get this from OpenWeatherMap
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 // Fallback weather data for demo purposes
@@ -71,10 +71,10 @@ export class WeatherService {
       // For demo purposes, return mock data
       // In production, you would use the OpenWeatherMap API
       const weatherData = await this.getMockWeatherData(location);
-      
+
       // Cache the result
       this.cache.set(location, { data: weatherData, timestamp: Date.now() });
-      
+
       return weatherData;
     } catch (error) {
       console.error('Error fetching weather data:', error);
