@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "places": "Places",
+    "interactiveMap": "Interactive Map",
+    "trips": "Trips",
+    "profile": "Profile",
+    "demo": "Demo",
+    "help": "Help"
+  },
+  "header": {
+    "welcome": "Welcome, {{name}}!",
+    "signInPrompt": "Sign in to explore India together",
+    "signOut": "Sign out"
+  },
+  "signInPage": {
+    "title": "Sign in to Sahyaatra",
+    "subtitle": "Welcome back! Continue your journey.",
+    "redirectNotice": "You will be returned to your previous page after signing in."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signingIn": "Signing in...",
+    "signingUp": "Signing up...",
+    "signInInstead": "Sign in instead",
+    "signUpInstead": "Sign up instead",
+    "noAccount": "Don't have an account? ",
+    "hasAccount": "Already have an account? ",
+    "haveCode": "Have a verification code? Verify email",
+    "signOut": "Sign out"
+  },
+  "verify": {
+    "title": "Verify Your Email",
+    "codeSentEmail": "We've sent a 6-digit code to <strong>{{email}}</strong>",
+    "codeSentConsole": "A 6-digit code has been logged in the <strong>developer console</strong> for <strong>{{email}}</strong>",
+    "devModeNotice": "⚠️ Dev Mode: Check your backend terminal for the code",
+    "placeholder": "000000",
+    "verifyButton": "Verify & Create Account",
+    "verifying": "Verifying...",
+    "resendIn": "Resend available in {{seconds}}s",
+    "resendCode": "Resend code",
+    "changeEmail": "Change email address"
+  },
+  "toast": {
+    "invalidPassword": "Invalid password. Please try again.",
+    "signInFailed": "Could not sign in, did you mean to sign up?",
+    "devModeCode": "DEV MODE: Check backend console for your verification code.",
+    "codeSentEmail": "Verification code sent to your email!",
+    "sendCodeFailed": "Failed to send verification code.",
+    "codeMustBe6": "Code must be 6 digits.",
+    "verifyFailed": "Failed to verify account. Please try signing up again.",
+    "accountCreated": "Account created and verified successfully!",
+    "codeResent": "Verification code resent!",
+    "resendFailed": "Failed to resend code."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "es": "Español"
+  }
+}

@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
-import { useMutation } from "convex/react";
+import { useEffect, useState, useRef } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { MapPin, Calendar, Users, FileText, Tag } from "lucide-react";
+import { MapPin, Calendar, Users, FileText, Tag, UserPlus, X, Search } from "lucide-react";
 import { PageBackground } from "../components/PageBackground";
+
+interface InvitedFriend {
+  userId: string;
+  name: string;
+  avatar: string | null;
+}
 
 export function CreateTrip() {
   const navigate = useNavigate();
@@ -25,8 +31,18 @@ export function CreateTrip() {
     imageType: "",
   });
 
+  const [invitedFriends, setInvitedFriends] = useState<InvitedFriend[]>([]);
+  const [friendSearch, setFriendSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [returnUrl, setReturnUrl] = useState<string | null>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Search users query — only fires when friendSearch has 2+ chars
+  const searchResults = useQuery(
+    api.friends.searchUsers,
+    friendSearch.trim().length >= 2 ? { searchTerm: friendSearch.trim() } : "skip"
+  );
 
   // Prefill from query params
   useEffect(() => {
@@ -38,6 +54,21 @@ export function CreateTrip() {
     }
     if (ret) setReturnUrl(ret);
   }, [location.search]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const maxTravelersNum = Number(formData.maxTravelers);
+  const openSlots = Math.max(0, maxTravelersNum - 1 - invitedFriends.length);
+  const canInviteMore = invitedFriends.length < maxTravelersNum - 1;
 
   const interests = [
     "Adventure",
@@ -59,6 +90,24 @@ export function CreateTrip() {
         ? prev.interests.filter((i) => i !== interest)
         : [...prev.interests, interest],
     }));
+  };
+
+  const handleInviteFriend = (friend: InvitedFriend) => {
+    if (!canInviteMore) {
+      toast.error("All spots are filled! Increase max travelers to invite more friends.");
+      return;
+    }
+    if (invitedFriends.some((f) => f.userId === friend.userId)) {
+      toast.info("This person is already invited.");
+      return;
+    }
+    setInvitedFriends((prev) => [...prev, friend]);
+    setFriendSearch("");
+    setShowDropdown(false);
+  };
+
+  const handleRemoveFriend = (userId: string) => {
+    setInvitedFriends((prev) => prev.filter((f) => f.userId !== userId));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,10 +140,12 @@ export function CreateTrip() {
         description: formData.description,
         interests: formData.interests,
         imageUrl: formData.imageUrl || undefined,
+        invitedFriends: invitedFriends.length > 0
+          ? invitedFriends.map((f) => f.userId) as any
+          : undefined,
       });
 
       toast.success("Trip created successfully!");
-      // If user came from a page (e.g., map or state), prefer returning there; otherwise go to trip detail
       if (returnUrl) {
         navigate(returnUrl, { replace: true });
       } else {
@@ -108,6 +159,11 @@ export function CreateTrip() {
       setIsSubmitting(false);
     }
   };
+
+  // Filter out already-invited users from search results
+  const filteredResults = (searchResults || []).filter(
+    (user) => !invitedFriends.some((f) => f.userId === user.userId)
+  );
 
   return (
     <PageBackground query="travel planning">
@@ -201,7 +257,15 @@ export function CreateTrip() {
                   </label>
                   <select
                     value={formData.maxTravelers}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, maxTravelers: e.target.value }))}
+                    onChange={(e) => {
+                      const newMax = Number(e.target.value);
+                      setFormData((prev) => ({ ...prev, maxTravelers: e.target.value }));
+                      // Trim invited friends if new max is smaller
+                      if (invitedFriends.length >= newMax) {
+                        setInvitedFriends((prev) => prev.slice(0, newMax - 1));
+                        toast.info("Some invited friends were removed because the group size decreased.");
+                      }
+                    }}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="2">2 people</option>
@@ -212,6 +276,129 @@ export function CreateTrip() {
                     <option value="8">8 people</option>
                     <option value="10">10 people</option>
                   </select>
+                </div>
+              </div>
+
+              {/* ─── Traveling With (Friends + Open Slots) ─── */}
+              <div className="border border-blue-200 bg-blue-50/50 rounded-xl p-5">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <UserPlus className="w-4 h-4 inline mr-1" />
+                  Traveling With
+                </label>
+
+                {/* Search Input */}
+                <div ref={searchRef} className="relative mb-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={friendSearch}
+                      onChange={(e) => {
+                        setFriendSearch(e.target.value);
+                        setShowDropdown(true);
+                      }}
+                      onFocus={() => setShowDropdown(true)}
+                      placeholder={
+                        canInviteMore
+                          ? "Search friends by name…"
+                          : "All spots filled — increase max travelers to invite more"
+                      }
+                      disabled={!canInviteMore}
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
+                    />
+                  </div>
+
+                  {/* Autocomplete Dropdown */}
+                  {showDropdown && friendSearch.trim().length >= 2 && (
+                    <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {filteredResults.length > 0 ? (
+                        filteredResults.map((user) => (
+                          <button
+                            key={user.userId}
+                            type="button"
+                            onClick={() =>
+                              handleInviteFriend({
+                                userId: user.userId,
+                                name: user.name,
+                                avatar: user.avatar,
+                              })
+                            }
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors text-left"
+                          >
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-green-400 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
+                              {user.avatar ? (
+                                <img 
+                                  src={user.avatar} 
+                                  alt={user.name} 
+                                  className="w-full h-full rounded-full object-cover" 
+                                />
+                              ) : (
+                                user.name.charAt(0).toUpperCase()
+                              )}
+                            </div>
+                            <span className="text-sm text-gray-800 font-medium">{user.name}</span>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                          No users found
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Invited Friends Chips */}
+                {invitedFriends.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {invitedFriends.map((friend) => (
+                      <div
+                        key={friend.userId}
+                        className="inline-flex items-center gap-2 pl-1 pr-2 py-1 bg-white border border-blue-200 rounded-full shadow-sm"
+                      >
+                        <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-green-400 rounded-full flex items-center justify-center text-white text-[10px] font-medium">
+                          {friend.avatar ? (
+                            <img
+                              src={friend.avatar}
+                              alt={friend.name}
+                              className="w-full h-full rounded-full object-cover"
+                            />
+                          ) : (
+                            friend.name.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <span className="text-sm text-gray-700">{friend.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFriend(friend.userId)}
+                          className="w-5 h-5 rounded-full flex items-center justify-center hover:bg-red-100 text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Open Slots Counter */}
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Users className="w-4 h-4" />
+                    <span>
+                      You{invitedFriends.length > 0 && ` + ${invitedFriends.length} friend${invitedFriends.length > 1 ? "s" : ""}`}
+                    </span>
+                  </div>
+                  <div
+                    className={`font-medium px-3 py-1 rounded-full ${
+                      openSlots > 0
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {openSlots > 0
+                      ? `${openSlots} open slot${openSlots > 1 ? "s" : ""} for co-travelers`
+                      : "Group is full!"}
+                  </div>
                 </div>
               </div>
 

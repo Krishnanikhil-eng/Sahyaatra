@@ -58,12 +58,35 @@ export const getTripById = query({
       .withIndex("by_user", (q) => q.eq("userId", trip.authorId))
       .unique();
 
+    // Resolve invited friend details
+    let invitedFriendDetails: { userId: string; name: string; avatar?: string }[] = [];
+    if (trip.invitedFriends && trip.invitedFriends.length > 0) {
+      invitedFriendDetails = await Promise.all(
+        trip.invitedFriends.map(async (friendId) => {
+          const friendProfile = await ctx.db
+            .query("profiles")
+            .withIndex("by_user", (q) => q.eq("userId", friendId))
+            .unique();
+          const friendUser = await ctx.db.get(friendId);
+          return {
+            userId: friendId,
+            name: friendProfile?.name || (friendUser as any)?.name || "Unknown",
+            avatar: friendProfile?.avatar,
+          };
+        })
+      );
+    }
+
+    const openSlots = Math.max(0, trip.maxTravelers - trip.currentTravelers);
+
     return {
       ...trip,
       author: {
         name: profile?.name || author?.name || "Unknown",
         avatar: profile?.avatar,
       },
+      invitedFriendDetails,
+      openSlots,
     };
   },
 });
@@ -78,12 +101,16 @@ export const createTrip = mutation({
     interests: v.array(v.string()),
     description: v.string(),
     imageUrl: v.optional(v.string()),
+    invitedFriends: v.optional(v.array(v.id("users"))),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
       throw new Error("Must be logged in to create a trip");
     }
+
+    const friendsList = args.invitedFriends || [];
+    const initialTravelers = 1 + friendsList.length; // creator + invited friends
 
     const tripId = await ctx.db.insert("trips", {
       authorId: userId,
@@ -92,12 +119,23 @@ export const createTrip = mutation({
       endDate: args.endDate,
       budget: args.budget,
       maxTravelers: args.maxTravelers,
-      currentTravelers: 1,
+      currentTravelers: initialTravelers,
       interests: args.interests,
       description: args.description,
-      status: "open",
+      status: initialTravelers >= args.maxTravelers ? "full" : "open",
       imageUrl: args.imageUrl,
+      invitedFriends: friendsList.length > 0 ? friendsList : undefined,
     });
+
+    // Auto-create accepted tripRequests for each invited friend
+    for (const friendId of friendsList) {
+      await ctx.db.insert("tripRequests", {
+        tripId,
+        requesterId: friendId,
+        status: "accepted",
+        message: "Invited by trip creator",
+      });
+    }
 
     return tripId;
   },

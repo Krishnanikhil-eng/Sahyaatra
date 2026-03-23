@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { MapPin, Users, MessageCircle, Calculator, User, Sparkles, Compass, HelpCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Navigation() {
   const location = useLocation();
+  const { t } = useTranslation();
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -15,7 +17,7 @@ export function Navigation() {
           }`}
       >
         <Compass className="w-4 h-4" />
-        <span>Places</span>
+        <span>{t('nav.places')}</span>
       </Link>
       <Link
         to="/places/map"
@@ -25,7 +27,7 @@ export function Navigation() {
           }`}
       >
         <MapPin className="w-4 h-4" />
-        <span>Interactive Map</span>
+        <span>{t('nav.interactiveMap')}</span>
       </Link>
       <Link
         to="/trips"
@@ -35,7 +37,7 @@ export function Navigation() {
           }`}
       >
         <Users className="w-4 h-4" />
-        <span>Trips</span>
+        <span>{t('nav.trips')}</span>
       </Link>
       <Link
         to="/profile"
@@ -45,7 +47,7 @@ export function Navigation() {
           }`}
       >
         <User className="w-4 h-4" />
-        <span>Profile</span>
+        <span>{t('nav.profile')}</span>
       </Link>
       <Link
         to="/demo"
@@ -55,7 +57,7 @@ export function Navigation() {
           }`}
       >
         <Sparkles className="w-4 h-4" />
-        <span>Demo</span>
+        <span>{t('nav.demo')}</span>
       </Link>
       <Link
         to="/help"
@@ -65,7 +67,7 @@ export function Navigation() {
           }`}
       >
         <HelpCircle className="w-4 h-4" />
-        <span>Help</span>
+        <span>{t('nav.help')}</span>
       </Link>
     </nav>
   );

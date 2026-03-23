@@ -333,6 +333,51 @@ export function TripDetail() {
               </div>
             )}
 
+            {/* Invited Friends */}
+            {trip.invitedFriendDetails && trip.invitedFriendDetails.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <span className="inline-flex items-center gap-2">
+                    <Users className="w-5 h-5 text-blue-500" />
+                    Invited Friends
+                  </span>
+                </h3>
+                <div className="space-y-3">
+                  {trip.invitedFriendDetails.map((friend) => (
+                    <div key={friend.userId} className="flex items-center gap-3 border border-blue-100 bg-blue-50/50 rounded-lg p-3">
+                      <div className="w-9 h-9 bg-gradient-to-r from-blue-400 to-green-400 rounded-full flex items-center justify-center text-white font-medium flex-shrink-0">
+                        {friend.avatar ? (
+                          <img src={friend.avatar} alt={friend.name} className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          friend.name.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{friend.name}</div>
+                        <div className="text-xs text-blue-600">Invited by organizer</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Open Slots Indicator */}
+            {trip.openSlots !== undefined && (
+              <div className={`rounded-xl shadow-sm p-5 text-center ${
+                trip.openSlots > 0 ? "bg-green-50 border border-green-200" : "bg-yellow-50 border border-yellow-200"
+              }`}>
+                <div className={`text-2xl font-bold ${trip.openSlots > 0 ? "text-green-700" : "text-yellow-700"}`}>
+                  {trip.openSlots}
+                </div>
+                <div className={`text-sm font-medium ${trip.openSlots > 0 ? "text-green-600" : "text-yellow-600"}`}>
+                  {trip.openSlots > 0
+                    ? `open slot${trip.openSlots > 1 ? "s" : ""} for unknown co-travelers`
+                    : "Group is full!"}
+                </div>
+              </div>
+            )}
+
             {/* Trip Author */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Trip Organizer</h3>

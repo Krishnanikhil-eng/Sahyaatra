@@ -8,7 +8,9 @@ import { Toaster } from "sonner";
 import { PageBackground } from "./components/PageBackground";
 import { AppRoutes } from "./AppRoutes";
 import { Navigation } from "./components/Navigation";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function App() {
   return (
@@ -29,6 +31,7 @@ export default function App() {
 }
 
 function Header() {
+  const { t } = useTranslation();
   const loggedInUser = useQuery(api.auth.loggedInUser);
 
   return (
@@ -49,17 +52,18 @@ function Header() {
           </Authenticated>
 
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
             <Authenticated>
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-gray-600">
-                  Welcome, {loggedInUser?.email?.split('@')[0] || 'friend'}!
+                  {t('header.welcome', { name: loggedInUser?.email?.split('@')[0] || 'friend' })}
                 </span>
                 <SignOutButton />
               </div>
             </Authenticated>
             <Unauthenticated>
               <div className="text-sm text-gray-600">
-                Sign in to explore India together
+                {t('header.signInPrompt')}
               </div>
             </Unauthenticated>
           </div>

@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "places": "Lugares",
+    "interactiveMap": "Mapa Interactivo",
+    "trips": "Viajes",
+    "profile": "Perfil",
+    "demo": "Demo",
+    "help": "Ayuda"
+  },
+  "header": {
+    "welcome": "¡Bienvenido/a, {{name}}!",
+    "signInPrompt": "Inicia sesión para explorar India juntos",
+    "signOut": "Cerrar sesión"
+  },
+  "signInPage": {
+    "title": "Iniciar sesión en Sahyaatra",
+    "subtitle": "¡Bienvenido/a de nuevo! Continúa tu viaje.",
+    "redirectNotice": "Serás redirigido/a a tu página anterior después de iniciar sesión."
+  },
+  "auth": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "signingIn": "Iniciando sesión...",
+    "signingUp": "Registrando...",
+    "signInInstead": "Iniciar sesión en su lugar",
+    "signUpInstead": "Registrarse en su lugar",
+    "noAccount": "¿No tienes una cuenta? ",
+    "hasAccount": "¿Ya tienes una cuenta? ",
+    "haveCode": "¿Tienes un código de verificación? Verificar correo",
+    "signOut": "Cerrar sesión"
+  },
+  "verify": {
+    "title": "Verifica tu correo electrónico",
+    "codeSentEmail": "Hemos enviado un código de 6 dígitos a <strong>{{email}}</strong>",
+    "codeSentConsole": "Se ha registrado un código de 6 dígitos en la <strong>consola del desarrollador</strong> para <strong>{{email}}</strong>",
+    "devModeNotice": "⚠️ Modo Dev: Revisa tu terminal del backend para el código",
+    "placeholder": "000000",
+    "verifyButton": "Verificar y crear cuenta",
+    "verifying": "Verificando...",
+    "resendIn": "Reenviar disponible en {{seconds}}s",
+    "resendCode": "Reenviar código",
+    "changeEmail": "Cambiar dirección de correo"
+  },
+  "toast": {
+    "invalidPassword": "Contraseña incorrecta. Por favor, inténtalo de nuevo.",
+    "signInFailed": "No se pudo iniciar sesión, ¿quisiste registrarte?",
+    "devModeCode": "MODO DEV: Revisa la consola del backend para tu código de verificación.",
+    "codeSentEmail": "¡Código de verificación enviado a tu correo!",
+    "sendCodeFailed": "No se pudo enviar el código de verificación.",
+    "codeMustBe6": "El código debe tener 6 dígitos.",
+    "verifyFailed": "No se pudo verificar la cuenta. Intenta registrarte de nuevo.",
+    "accountCreated": "¡Cuenta creada y verificada exitosamente!",
+    "codeResent": "¡Código de verificación reenviado!",
+    "resendFailed": "No se pudo reenviar el código."
+  },
+  "language": {
+    "label": "Idioma",
+    "en": "English",
+    "es": "Español"
+  }
+}

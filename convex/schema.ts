@@ -13,6 +13,16 @@ const applicationTables = {
     bestTime: v.string(),
   }).index("by_code", ["code"]),
 
+  // Verification Codes
+  verificationCodes: defineTable({
+    userId: v.optional(v.id("users")),
+    email: v.optional(v.string()),
+    code: v.string(),
+    expiresAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_email", ["email"]),
+
   // User profiles
   profiles: defineTable({
     userId: v.id("users"),
@@ -20,6 +30,7 @@ const applicationTables = {
     bio: v.optional(v.string()),
     interests: v.array(v.string()),
     verified: v.boolean(),
+    emailVerified: v.optional(v.boolean()),
     avatar: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
@@ -41,6 +52,7 @@ const applicationTables = {
     imageSize: v.optional(v.number()),
     imageType: v.optional(v.string()),
     verificationToken: v.optional(v.string()),
+    invitedFriends: v.optional(v.array(v.id("users"))),
   }).index("by_author", ["authorId"])
     .index("by_status", ["status"])
     .index("by_destination", ["destination"])
