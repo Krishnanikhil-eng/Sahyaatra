@@ -1,0 +1,12 @@
+{
+  "places": "Lugares",
+  "interactiveMap": "Mapa Interactivo",
+  "trips": "Viajes",
+  "profile": "Perfil",
+  "demo": "Demo",
+  "help": "Ayuda",
+  "header": {
+    "welcome": "¡Bienvenido de nuevo, {{name}}!",
+    "signInPrompt": "Iniciar sesión"
+  }
+}

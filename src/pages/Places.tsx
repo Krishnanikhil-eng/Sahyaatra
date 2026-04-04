@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Search, Filter, Grid, List, Eye, Star, ArrowRight, Compass, ExternalLink, Clock, DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import cleanedPlacesData from '../data/cleaned/all_places_cleaned.json';
 import missingStatesData from '../data/missingStatesData.json';
 import { ImageService, UnsplashImage } from '../services/imageService';
@@ -30,6 +31,7 @@ interface Place {
 }
 
 export function Places() {
+  const { t } = useTranslation(['places', 'common']);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedState, setSelectedState] = useState<string>('all');
@@ -50,7 +52,7 @@ export function Places() {
   })).sort((a, b) => a.name.localeCompare(b.name));
 
   const states = [
-    { code: 'all', name: 'All States & Union Territories' },
+    { code: 'all', name: t('places:filters.allStates') || 'All States & Union Territories' },
     ...uniqueStates
   ];
 
@@ -124,10 +126,10 @@ export function Places() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
-                Discover Amazing Places in India
+                {t('places:title')}
               </h1>
               <p className="text-lg text-gray-600">
-                Explore {allPlaces.length} tourist destinations with real images and detailed information
+                {t('places:subtitle', { count: allPlaces.length })}
               </p>
             </div>
             
@@ -137,7 +139,7 @@ export function Places() {
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center"
               >
                 <MapPin className="w-5 h-5 mr-2" />
-                Interactive Map
+                {t('common:buttons.interactiveMap')}
               </button>
             </div>
           </div>
@@ -154,7 +156,7 @@ export function Places() {
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search places, states, or categories..."
+                  placeholder={t('places:searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
@@ -174,7 +176,7 @@ export function Places() {
                   <option key={state.code} value={state.code}>
                     {state.code === 'all'
                       ? state.name
-                      : `${state.name} (${('type' in state && (state as any).type === 'state') ? 'State' : 'UT'})`}
+                      : `${state.name} (${('type' in state && (state as any).type === 'state') ? t('common:labels.state') : t('common:labels.ut')})`}
                   </option>
                 ))}
               </select>
@@ -190,7 +192,7 @@ export function Places() {
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category}
+                    {category === 'all' ? t('places:filters.all') : (t(`places:filters.${category.toLowerCase()}`) || category)}
                   </option>
                 ))}
               </select>
@@ -225,9 +227,9 @@ export function Places() {
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-lg text-gray-600">
-            Showing <span className="font-semibold text-blue-600">{filteredPlaces.length}</span> places
-            {selectedState !== 'all' && ` in ${states.find(s => s.code === selectedState)?.name}`}
-            {selectedCategory !== 'all' && ` in ${selectedCategory}`}
+            {t('places:showing', { count: filteredPlaces.length })}
+            {selectedState !== 'all' && ` ${t('common:labels.in')} ${states.find(s => s.code === selectedState)?.name}`}
+            {selectedCategory !== 'all' && ` ${t('common:labels.in')} ${t(`places:filters.${selectedCategory.toLowerCase()}`) || selectedCategory}`}
           </p>
         </div>
 
@@ -261,7 +263,7 @@ export function Places() {
                   {/* Category Badge */}
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-sm rounded-full font-medium">
-                      {place.category}
+                      {t(`places:filters.${place.category.toLowerCase()}`) || place.category}
                     </span>
                   </div>
                   
@@ -282,7 +284,7 @@ export function Places() {
                       </div>
                       <div className="flex items-center space-x-2 text-sm">
                         <Star className="w-4 h-4" />
-                        <span>{place.best_time || 'Year Round'}</span>
+                        <span>{place.best_time || t('common:labels.yearRound')}</span>
                       </div>
                     </div>
                   </div>
@@ -294,17 +296,17 @@ export function Places() {
                   <div className="space-y-3 mb-4">
                     <div className="flex items-center text-sm text-gray-600">
                       <Clock className="w-4 h-4 mr-2 text-blue-500" />
-                      <span><strong>Best time:</strong> {place.best_time || 'Year Round'}</span>
+                      <span><strong>{t('places:details.bestTime')}:</strong> {place.best_time || t('common:labels.yearRound')}</span>
                     </div>
                     
                     <div className="flex items-center text-sm text-gray-600">
                       <DollarSign className="w-4 h-4 mr-2 text-green-500" />
-                      <span><strong>Entry:</strong> {place.entry_fee || 'Free'}</span>
+                      <span><strong>{t('places:details.entry') || 'Entry'}:</strong> {place.entry_fee || t('common:labels.free')}</span>
                     </div>
                     
                     <div className="flex items-center text-sm text-gray-600">
                       <MapPin className="w-4 h-4 mr-2 text-purple-500" />
-                      <span className="truncate">{place.nearest_railway || 'Check details'}</span>
+                      <span className="truncate">{place.nearest_railway || t('common:labels.checkDetails')}</span>
                     </div>
                   </div>
                   
@@ -319,7 +321,7 @@ export function Places() {
                         className="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                       >
                         <ExternalLink className="w-4 h-4 mr-1" />
-                        Website
+                        {t('common:buttons.website')}
                       </a>
                     )}
                     
@@ -346,10 +348,10 @@ export function Places() {
               <MapPin className="w-12 h-12 text-gray-400" />
             </div>
             <h3 className="text-2xl font-semibold text-gray-600 mb-2">
-              No places found
+              {t('places:noResults')}
             </h3>
             <p className="text-gray-500 mb-6">
-              Try adjusting your search criteria or filters
+              {t('places:noResultsDesc') || 'Try adjusting your search criteria or filters'}
             </p>
             <button
               onClick={() => {
@@ -359,11 +361,11 @@ export function Places() {
               }}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Clear Filters
+              {t('common:buttons.clearFilters')}
             </button>
           </div>
         )}
       </div>
     </div>
   );
-}
+}

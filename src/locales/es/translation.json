@@ -1,0 +1,540 @@
+{
+  ",": "[ES] ,",
+  "@": "[ES] @",
+  "T": "[ES]  T",
+  "_": "[ES] _",
+  "auth": {
+    "auth": {
+      "email": "Correo electrónico",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "haveCode": "¿Ya tienes un código de verificación?",
+      "noAccount": "¿No tienes una cuenta?",
+      "password": "Contraseña",
+      "signIn": "Iniciar sesión",
+      "signInInstead": "Inicia sesión",
+      "signUp": "Registrarse",
+      "signUpInstead": "Regístrate"
+    },
+    "signInPrompt": "[ES] Sign In Prompt",
+    "signOut": "[ES] Sign Out",
+    "toast": {
+      "accountCreated": "¡Cuenta creada con éxito!",
+      "codeMustBe6": "El código de verificación debe tener 6 dígitos",
+      "codeResent": "¡Código de verificación reenviado!",
+      "codeSentEmail": "¡Código de verificación enviado a tu correo!",
+      "devModeCode": "Modo de desarrollo: ¡Revisa la consola para el código!",
+      "invalidPassword": "Contraseña no válida. Inténtalo de nuevo.",
+      "resendFailed": "Error al reenviar el código",
+      "sendCodeFailed": "Error al enviar el código de verificación",
+      "signInFailed": "Error al iniciar sesión. Comprueba tus credenciales.",
+      "verifyFailed": "Error de verificación"
+    },
+    "verify": {
+      "changeEmail": "Cambiar dirección de correo",
+      "codeSentConsole": "Revisa tu <strong>terminal/consola</strong> para el código de verificación enviado a {{email}}",
+      "codeSentEmail": "Hemos enviado un código de 6 dígitos a <strong>{{email}}</strong>",
+      "devModeNotice": "Modo de desarrollo: Los correos se registran en la consola en lugar de enviarse.",
+      "placeholder": "Introduce el código de 6 dígitos",
+      "resendCode": "Reenviar código",
+      "resendIn": "Reenviar código en {{seconds}}s",
+      "title": "Verifica tu correo",
+      "verifyButton": "Verificar y crear cuenta",
+      "verifying": "Verificando..."
+    },
+    "welcome": "[ES] Welcome"
+  },
+  "budget": {
+    "addExpense": {
+      "amount": "Cantidad",
+      "category": "Categoría",
+      "date": "Fecha",
+      "description": "Descripción",
+      "descriptionPlaceholder": "ej., Almuerzo en restaurante",
+      "submit": "Añadir Gasto",
+      "title": "Añadir Gasto"
+    },
+    "backToTrip": "Volver al Viaje",
+    "categories": {
+      "activities": "Actividades",
+      "food": "Comida",
+      "misc": "Varios",
+      "stay": "Alojamiento",
+      "travel": "Viajes"
+    },
+    "createTitle": "Crea tu Presupuesto",
+    "messages": {
+      "addError": "Error al añadir el gasto",
+      "createError": "Error al crear el presupuesto",
+      "created": "¡Presupuesto creado con éxito!",
+      "expenseAdded": "¡Gasto añadido con éxito!",
+      "loading": "Cargando presupuesto...",
+      "noExpenses": "Aún no se han registrado gastos"
+    },
+    "noBudget": "Aún no se ha establecido el presupuesto",
+    "noBudgetDesc": "El organizador del viaje aún no ha iniciado el presupuesto para este viaje.",
+    "overview": {
+      "remaining": "Restante",
+      "spent": "Total Gastado",
+      "total": "Presupuesto Total"
+    },
+    "sections": {
+      "breakdown": "Desglose por Categoría",
+      "recentExpenses": "Gastos Recientes"
+    },
+    "title": "Planificador de Presupuesto"
+  },
+  "chat": {
+    "ai": {
+      "askButton": "Preguntar a la IA",
+      "error": "Error al obtener respuesta de la IA",
+      "label": "Asistente de viaje IA",
+      "placeholder": "Pregunta a la IA sobre tu viaje, lugares para visitar, consejos de presupuesto...",
+      "success": "¡Respuesta de la IA añadida al chat!"
+    },
+    "error": "Lo siento, tengo problemas para responder en este momento. Por favor, inténtalo de nuevo o utiliza las otras funciones de la plataforma para planificar tu viaje.",
+    "messages": {
+      "error": "[ES] Error",
+      "placeholder": "Escribe tu mensaje..."
+    },
+    "page": {
+      "loading": "Cargando chat...",
+      "membersCount": "{{count}} miembros",
+      "participants": "Participantes",
+      "tripChat": "Chat del viaje"
+    },
+    "placeholder": "[ES] Placeholder",
+    "qr": {
+      "button": "QR de verificación del viaje",
+      "errorBaseUrl": "La verificación del viaje no está disponible temporalmente. Por favor, contacta con soporte.",
+      "errorGenerate": "Error al generar el QR de verificación",
+      "modalInfo": "Este QR contiene un enlace de verificación seguro solo para este viaje.",
+      "modalSubtitle": "Pide a un compañero de viaje que escanee este QR para verificar el viaje.",
+      "modalTitle": "Verificación del viaje"
+    },
+    "title": "[ES] Sahyaatra AI",
+    "welcome": "¡Hola! Soy tu asistente de IA de Sahyaatra. Puedo ayudarte con:\n\n• Planificación de viajes e itinerarios\n• Encontrar compañeros de viaje\n• Consejos sobre presupuesto\n• Recomendaciones de destinos\n• Información y consejos locales\n\n¿Qué te gustaría saber?"
+  },
+  "common": {
+    "actions": {
+      "accept": "[ES] Accept",
+      "reject": "[ES] Reject"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "clearFilters": "Borrar filtros",
+      "clearSelection": "Borrar selección",
+      "explore": "Explorar {{name}}",
+      "interactiveMap": "Mapa Interactivo",
+      "save": "Guardar cambios",
+      "website": "Sitio web"
+    },
+    "cancel": "[ES] Cancel",
+    "labels": {
+      "checkDetails": "Ver detalles",
+      "free": "Gratis",
+      "friend": "[ES] Friend",
+      "friends": "[ES] Friends",
+      "in": "en",
+      "name": "[ES] Name",
+      "state": "Estado",
+      "tip": "Sugerencia",
+      "ut": "TU",
+      "yearRound": "Todo el año",
+      "you": "[ES] You"
+    },
+    "messages": {
+      "error": "[ES] Error"
+    },
+    "status": {
+      "accepted": "[ES] Accepted"
+    },
+    "submitting": "[ES] Submitting",
+    "tagline": "[ES] Tagline",
+    "user": {
+      "friend": "amigo"
+    }
+  },
+  "destination": "[ES] Destination",
+  "email": "[ES] Email",
+  "flow": "[ES] Flow",
+  "help": {
+    "categories": {
+      "emergency": {
+        "description": "Acceso rápido a líneas de ayuda nacionales, policía y servicios médicos.",
+        "title": "Contactos de Emergencia"
+      },
+      "report": {
+        "description": "¿Has encontrado un error o necesitas soporte directo? Envíanos un mensaje.",
+        "title": "Informar de un Problema"
+      },
+      "safety": {
+        "description": "Mejores prácticas para conocer a compañeros de viaje y mantenerse seguro en su viaje.",
+        "title": "Pautas de Seguridad"
+      }
+    },
+    "cta": {
+      "button": "Informar de un Problema",
+      "description": "Nuestro equipo está aquí para apoyarte las 24 horas, los 7 días de la semana. Conéctate con nosotros a través de cualquiera de estos canales.",
+      "title": "¿Aún necesitas ayuda?"
+    },
+    "emergency": {
+      "ambulance": "Ambulancia",
+      "child": "Línea de ayuda infantil",
+      "international": "Si viajas al extranjero, contacta con los servicios de emergencia locales.",
+      "national": "Emergencia nacional",
+      "police": "Policía",
+      "women": "Línea de ayuda para mujeres"
+    },
+    "faq": {
+      "categories": {
+        "account": "Cuenta",
+        "ai": "Funciones de IA",
+        "all": "Todos",
+        "qr": "Verificación QR",
+        "trips": "Viajes"
+      },
+      "noArticles": "No se encontraron artículos en esta categoría.",
+      "title": "Preguntas Frecuentes"
+    },
+    "hero": {
+      "subtitle": "Todo lo que necesitas saber sobre el uso de Sahyaatra y cómo mantenerte seguro.",
+      "title": "Centro de Ayuda"
+    },
+    "report": {
+      "error": "Error al enviar el informe. Por favor, inténtalo de nuevo más tarde.",
+      "form": {
+        "description": "Descripción",
+        "email": "Correo electrónico",
+        "issueType": {
+          "ai": "Problema con el itinerario de IA",
+          "label": "Tipo de problema",
+          "other": "Otro",
+          "qr": "Fallo de verificación QR",
+          "trip": "Problema de gestión del viaje",
+          "user": "Usuario sospechoso"
+        },
+        "name": "Nombre",
+        "placeholder": "Por favor, describe el problema en detalle...",
+        "submit": "Enviar informe",
+        "title": "Informar de un problema"
+      },
+      "successMessage": "Gracias por hacérnoslo saber. Revisamos los problemas con prontitud para mantener segura a la comunidad.",
+      "successTitle": "Informe enviado con éxito"
+    },
+    "safety": {
+      "guidelines": {
+        "activity": "Informa de actividad sospechosa de inmediato.",
+        "chat": "Utiliza solo el chat de la aplicación para la comunicación.",
+        "numbers": "Consulta los números de emergencia que figuran en la sección de Ayuda.",
+        "passwords": "No compartas OTP ni contraseñas.",
+        "personal": "Evita compartir información personal sensible.",
+        "police": "Contacta con las autoridades locales en situaciones inseguras.",
+        "public": "Reúnete primero en lugares públicos.",
+        "qr": "Utiliza la verificación QR en la aplicación antes de reunirte.",
+        "save": "Mantén guardados los contactos de emergencia.",
+        "share": "Comparte los detalles del viaje con un contacto de confianza.",
+        "verify": "Verifica el perfil del anfitrión del viaje."
+      },
+      "sections": {
+        "before": "Antes de conocer a compañeros de viaje",
+        "digital": "Seguridad digital",
+        "during": "Durante el viaje",
+        "emergency": "Protocolo de emergencia"
+      }
+    }
+  },
+  "home": {
+    "buttons": {
+      "browse": "Explorar Lugares",
+      "map": "Mapa Interactivo",
+      "plan": "Planificar Viaje"
+    },
+    "cta": {
+      "button": "Comenzar con el Mapa Interactivo",
+      "desc": "Únete a miles de viajeros que han descubierto lugares increíbles con Sahyaatra. ¡Comienza tu viaje hoy!",
+      "title": "¿Listo para explorar la India?"
+    },
+    "features": {
+      "ai": {
+        "desc": "Obtén consejos de viaje personalizados y recomendaciones de nuestro avanzado asistente de viaje de IA.",
+        "title": "Asistente de IA"
+      },
+      "budget": {
+        "desc": "Sigue tus gastos y planifica tu presupuesto de viaje con nuestra calculadora de gastos inteligente.",
+        "title": "Calculadora de Presupuesto"
+      },
+      "map": {
+        "desc": "Explora la India con nuestro hermoso mapa interactivo SVG. Haz clic en cualquier estado para descubrir sus destinos turísticos.",
+        "title": "Mapa Interactivo"
+      },
+      "planning": {
+        "desc": "Crea y gestiona tus itinerarios de viaje con sugerencias de IA y actualizaciones en tiempo real.",
+        "title": "Planificación Inteligente"
+      },
+      "subtitle": "Desde descubrir joyas ocultas hasta planificar tu itinerario, te cubrimos con tecnología de vanguardia.",
+      "title": "Todo lo que Necesitas para un Viaje Perfecto"
+    },
+    "hero": {
+      "badge": "Descubre las Joyas Ocultas de la India",
+      "subtitle": "Descubre más de 9,000 destinos turísticos asombrosos en toda la India con recomendaciones impulsadas por IA, fotografías impresionantes e información de viaje completa.",
+      "title": "Explora",
+      "titleAccent": "India Increíble"
+    },
+    "stats": {
+      "ai": "Impulsado por IA",
+      "aiLabel": "Recomendaciones de Viaje",
+      "destinations": "[ES] 9,000+",
+      "destinationsLabel": "Destinos Turísticos",
+      "states": "[ES] 36+",
+      "statesLabel": "Estados y Territorios"
+    },
+    "trips": {
+      "createFirst": "Crear Primer Viaje",
+      "none": "No hay viajes aún",
+      "noneDesc": "¡Sé el primero en planificar un viaje increíble y conectarte con otros viajeros!",
+      "recentSubtitle": "Únete a viajes emocionantes planificados por otros viajeros",
+      "recentTitle": "Viajes Recientes",
+      "viewAll": "Ver todos los viajes"
+    }
+  },
+  "map": {
+    "controls": {
+      "searchPlaceholder": "Buscar estados, abreviaturas o capitales..."
+    },
+    "detail": {
+      "about": "Acerca de {{name}}",
+      "attractions": "Principales atracciones",
+      "back": "Volver al mapa",
+      "bestTime": "Mejor época para visitar",
+      "findBuddies": {
+        "button": "Encontrar compañeros de viaje",
+        "subtitle": "Conéctate con otros viajeros que planean visitar {{name}}",
+        "title": "Encontrar compañeros de viaje"
+      },
+      "loading": "Cargando información del estado...",
+      "planYourTrip": {
+        "create": "Crear viaje a {{name}}",
+        "find": "Encontrar compañeros de viaje",
+        "title": "Planea tu viaje"
+      },
+      "travelTips": {
+        "tip1": "Reserve alojamiento con anticipación durante la temporada alta",
+        "tip2": "Pruebe la cocina local y las especialidades",
+        "tip3": "Respete las costumbres y tradiciones locales",
+        "tip4": "Lleve una identificación válida para el check-in en el hotel",
+        "tip5": "Tenga a mano los contactos de emergencia",
+        "title": "Consejos de viaje"
+      },
+      "trips": {
+        "noTrips": "Aún no hay viajes planeados a {{name}}",
+        "planButton": "Planear un viaje",
+        "title": "Viajes a {{name}}",
+        "travelers": "{{current}}/{{max}} viajeros"
+      }
+    },
+    "grid": {
+      "placesCount": "{{count}} lugares",
+      "regionStates": "Estados de {{region}}",
+      "title": "Estados y Territorios de la Unión"
+    },
+    "header": {
+      "subtitle": "Descubre la rica cultura, el patrimonio y la belleza natural de los 28 estados y 8 territorios de la unión de la India",
+      "title": "Explora la India Increíble"
+    },
+    "info": {
+      "defaultDesc": "Haz clic en cualquier estado o territorio de la unión para explorar su cultura, historia y atracciones únicas.",
+      "defaultTitle": "Mapa Interactivo de la India",
+      "labels": {
+        "availablePlaces": "Lugares Disponibles",
+        "bestTime": "Mejor Época para Visitar",
+        "currentWeather": "Clima Actual",
+        "state": "Estado",
+        "topHighlights": "Lo más Destacado",
+        "ut": "Territorio de la Unión"
+      },
+      "stats": {
+        "filteredResults": "Resultados Filtrados:",
+        "states": "Estados",
+        "totalRegions": "Regiones Totales:",
+        "uts": "Territorios de la Unión"
+      },
+      "tip": "Consejo: Usa las opciones de búsqueda y filtro para encontrar estados específicos rápidamente."
+    }
+  },
+  "nav": {
+    "demo": "[ES] Demo",
+    "header": {
+      "signInPrompt": "Iniciar sesión",
+      "welcome": "¡Bienvenido de nuevo, {{name}}!"
+    },
+    "help": "Ayuda",
+    "interactiveMap": "Mapa Interactivo",
+    "places": "Lugares",
+    "profile": "Perfil",
+    "trips": "Viajes"
+  },
+  "password": "[ES] Password",
+  "places": {
+    "details": {
+      "bestTime": "Mejor época para visitar",
+      "entry": "[ES] Entry"
+    },
+    "filters": {
+      "all": "Todos los lugares",
+      "allStates": "[ES] All States"
+    },
+    "noResults": "No se encontraron lugares que coincidan con tus criterios",
+    "noResultsDesc": "[ES] No Results Desc",
+    "searchPlaceholder": "Buscar destinos, estados o categorías...",
+    "showing": "[ES] Showing",
+    "subtitle": "Explora miles de destinos asombrosos en toda la India",
+    "title": "Descubre Lugares Increíbles"
+  },
+  "profile": {
+    "completeProfile": "Completa tu perfil",
+    "completeProfileDesc": "Añade tus datos para conectar con compañeros de viaje",
+    "editProfile": "Editar Perfil",
+    "labels": {
+      "bio": "Biografía",
+      "bioPlaceholder": "Cuéntale a otros sobre ti, tu estilo de viaje y lo que buscas en compañeros de viaje...",
+      "pictureDesc": "Sube una foto profesional o temática de viajes. Tamaño máximo 5MB."
+    },
+    "levels": {
+      "enthusiast": "Entusiasta del Viaje",
+      "expert": "Experto en Viajes",
+      "new": "Nuevo Explorador",
+      "seasoned": "Viajero Experimentado"
+    },
+    "messages": {
+      "imageSizeError": "El tamaño de la imagen debe ser inferior a 5MB",
+      "nameRequired": "El nombre es obligatorio",
+      "saving": "Guardando...",
+      "updated": "¡Perfil actualizado con éxito!"
+    },
+    "sections": {
+      "interests": "Intereses de Viaje",
+      "myTrips": "Mis Viajes",
+      "picture": "Foto de Perfil",
+      "stats": "Estadísticas de Viaje"
+    },
+    "setupProfile": "Configura tu perfil",
+    "signInRequired": "Inicia sesión para ver tu perfil",
+    "stats": {
+      "budgetManaged": "Presupuesto Gestionado",
+      "completed": "Viajes Completados",
+      "travelLevel": "Nivel de Viajero",
+      "tripsCreated": "Viajes Creados",
+      "tripsJoined": "Viajes Unidos"
+    },
+    "title": "Tu Perfil"
+  },
+  "redirect": "[ES] Redirect",
+  "return": "[ES] Return",
+  "signInPage": {
+    "redirectNotice": "[ES] Redirect Notice",
+    "subtitle": "[ES] Subtitle",
+    "title": "[ES] Title"
+  },
+  "state": "[ES] State",
+  "trips": {
+    "adjustCriteria": "[ES] Adjust Criteria",
+    "beTheFirst": "[ES] Be The First",
+    "card": {
+      "by": "por {{name}}",
+      "joined": "{{count}} viajeros"
+    },
+    "create": {
+      "back": "Volver",
+      "budget": "Presupuesto por persona (₹)",
+      "budgetPlaceholder": "[ES] 15000",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Cuéntale a otros sobre tus planes, qué buscas en tus compañeros y cualquier requisito especial...",
+      "destination": "Destino",
+      "destinationPlaceholder": "ej., Goa, Manali, Kerala",
+      "endDate": "Fecha de Finalización",
+      "image": "Imagen del Viaje (opcional)",
+      "imageDragDrop": "o arrastrar y soltar",
+      "imageTypeDesc": "PNG, JPG, GIF hasta 10MB",
+      "imageUpload": "Subir un archivo",
+      "interests": "Intereses",
+      "interestsSubtitle": "Selecciona intereses que coincidan con tu estilo de viaje",
+      "maxTravelers": "Nº Máximo de Viajeros",
+      "maxTravelersOption": "{{count}} personas",
+      "noUsersFound": "No se encontraron usuarios",
+      "returnNotice": "Comenzaste a crear un viaje desde otra página.",
+      "searchFriends": "Buscar amigos por nombre...",
+      "spotsFilled": "¡Todos los cupos llenos! Aumenta el número de viajeros para invitar más",
+      "startDate": "Fecha de Inicio",
+      "submit": "Crear Viaje",
+      "submitting": "Creando Viaje...",
+      "subtitle": "Comparte tus planes de viaje y encuentra increíbles compañeros",
+      "title": "Crea Tu Viaje",
+      "travelingWith": "Viajando Con"
+    },
+    "createFirst": "[ES] Create First",
+    "createTrip": "Crear Viaje",
+    "detail": {
+      "about": "Sobre este viaje",
+      "backToTrips": "Volver a Viajes",
+      "budget": "Presupuesto",
+      "budgetPlanner": "Planificador de Presupuesto",
+      "coTravelers": "Compañeros de Viaje",
+      "dates": "Fechas",
+      "groupChat": "Chat de Grupo",
+      "groupFull": "¡El grupo está lleno!",
+      "interests": "Intereses",
+      "invitedByOrganizer": "Invitado por el organizador",
+      "invitedFriends": "Amigos Invitados",
+      "loading": "Cargando detalles del viaje...",
+      "openSlots": "{{count}} cupo abierto para compañeros",
+      "organizer": "Organizador del Viaje",
+      "relatedPlace": "Lugar Relacionado",
+      "requestSent": "¡Solicitud enviada! Espera la aprobación.",
+      "requestToJoin": "Solicitar Unirse",
+      "requests": "Solicitudes de Viaje",
+      "travelers": "Viajeros",
+      "viewPlace": "Ver Lugar"
+    },
+    "filterInterests": "Filtrar por Interés",
+    "filters": "Filtros",
+    "maxBudgetFilter": "Presupuesto Máximo (₹)",
+    "messages": {
+      "alreadyInvited": "Esta persona ya está invitada.",
+      "createError": "Error al crear el viaje. Por favor, inténtalo de nuevo.",
+      "createSuccess": "¡Viaje creado con éxito!",
+      "dateError": "La fecha de finalización debe ser posterior a la de inicio",
+      "fillRequired": "Por favor, completa todos los campos obligatorios",
+      "friendsRemoved": "Se eliminaron algunos amigos invitados porque el tamaño del grupo disminuyó.",
+      "interestError": "Por favor, selecciona al menos un interés",
+      "requestError": "Error al enviar la solicitud",
+      "requestSuccess": "¡Solicitud enviada con éxito!",
+      "respondError": "Error al responder a la solicitud",
+      "respondSuccess": "¡Solicitud {{response}} con éxito!",
+      "spotsFilledError": "¡Todos los cupos están llenos! Aumenta el número de viajeros para invitar más amigos."
+    },
+    "noTripsFound": "No se encontraron viajes que coincidan con tus criterios",
+    "resultsCount": "{{count}} viajes encontrados",
+    "searchPlaceholder": "Buscar por destino...",
+    "subtitle": "Descubre, únete o crea experiencias de viaje increíbles con personas afines.",
+    "tabs": {
+      "all": "Todos los Viajes",
+      "myTrips": "Mis Viajes"
+    },
+    "title": "Viajes"
+  },
+  "verify": {
+    "backHome": "Volver al inicio",
+    "details": {
+      "destination": "Destino",
+      "status": "Estado"
+    },
+    "error": "El enlace de verificación que siguió no es válido, ha caducado o el viaje ya no está activo.",
+    "failedSubtitle": "Verificación de viaje inválida o inactiva",
+    "failedTitle": "Verificación Fallida",
+    "footer": "Sistema Seguro de Verificación de Viajes • Smart-BU",
+    "successSubtitle": "Este es un viaje de co-viajero verificado",
+    "title": "Viaje Verificado"
+  },
+  "weather": "[ES] Weather",
+  "welcome": "[ES] Welcome"
+}

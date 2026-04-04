@@ -1,0 +1,43 @@
+{
+  "title": "Your Profile",
+  "editProfile": "Edit Profile",
+  "signInRequired": "Please sign in to view your profile",
+  "setupProfile": "Set up your profile",
+  "completeProfile": "Complete your profile",
+  "completeProfileDesc": "Add your details to connect with travel buddies",
+  "sections": {
+    "personalInfo": "Personal Information",
+    "myTrips": "My Trips",
+    "settings": "Settings",
+    "preferences": "Travel Preferences",
+    "interests": "Travel Interests",
+    "picture": "Profile Picture",
+    "stats": "Travel Stats"
+  },
+  "labels": {
+    "name": "Full Name",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell others about yourself, your travel style, and what you're looking for in travel buddies...",
+    "pictureDesc": "Upload a professional or travel-themed photo. Max size 5MB."
+  },
+  "stats": {
+    "tripsCreated": "Trips Created",
+    "tripsJoined": "Trips Joined",
+    "completed": "Completed Trips",
+    "budgetManaged": "Budget Managed",
+    "placesVisited": "Places Visited",
+    "travelLevel": "Travel Level"
+  },
+  "levels": {
+    "new": "New Explorer",
+    "enthusiast": "Travel Enthusiast",
+    "seasoned": "Seasoned Traveler",
+    "expert": "Travel Expert"
+  },
+  "messages": {
+    "updated": "Profile updated successfully!",
+    "saving": "Saving...",
+    "nameRequired": "Name is required",
+    "imageSizeError": "Image size must be less than 5MB"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "buttons": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "signup": "Registrarse",
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "explore": "Explorar {{name}}",
+    "clearSelection": "Borrar selección",
+    "interactiveMap": "Mapa Interactivo",
+    "website": "Sitio web",
+    "clearFilters": "Borrar filtros"
+  },
+  "user": {
+    "welcome": "¡Bienvenido de nuevo, {{name}}!",
+    "friend": "amigo"
+  },
+  "labels": {
+    "state": "Estado",
+    "ut": "TU",
+    "in": "en",
+    "yearRound": "Todo el año",
+    "free": "Gratis",
+    "checkDetails": "Ver detalles",
+    "tip": "Sugerencia"
+  }
+}

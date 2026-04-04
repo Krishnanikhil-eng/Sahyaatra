@@ -1,0 +1,75 @@
+{
+  "header": {
+    "title": "Explore Incredible India",
+    "subtitle": "Discover the rich culture, heritage, and natural beauty of all 28 states and 8 union territories of India"
+  },
+  "controls": {
+    "searchPlaceholder": "Search states, abbreviations, or capitals...",
+    "allRegions": "All Regions"
+  },
+  "info": {
+    "defaultTitle": "Interactive India Map",
+    "defaultDesc": "Click on any state or union territory to explore its unique culture, history, and attractions.",
+    "stats": {
+      "states": "States",
+      "uts": "Union Territories",
+      "totalRegions": "Total Regions:",
+      "filteredResults": "Filtered Results:"
+    },
+    "tip": "Tip: Use the search and filter options to find specific states quickly.",
+    "labels": {
+      "state": "State",
+      "ut": "Union Territory",
+      "availablePlaces": "Available Places",
+      "currentWeather": "Current Weather",
+      "topHighlights": "Top Highlights",
+      "bestTime": "Best Time to Visit"
+    }
+  },
+  "regions": {
+    "all": "All Regions",
+    "Northern": "Northern",
+    "Western": "Western",
+    "Central": "Central",
+    "Eastern": "Eastern",
+    "Southern": "Southern",
+    "Northeastern": "Northeastern",
+    "Islands": "Islands"
+  },
+  "grid": {
+    "title": "States & Union Territories",
+    "regionStates": "{{region}} States",
+    "placesCount": "{{count}} places"
+  },
+  "detail": {
+    "back": "Back to Map",
+    "loading": "Loading state information...",
+    "findBuddies": {
+      "title": "Find Co-Travellers",
+      "subtitle": "Connect with other travelers planning to visit {{name}}",
+      "button": "Find Travel Buddies"
+    },
+    "about": "About {{name}}",
+    "attractions": "Top Attractions",
+    "trips": {
+      "title": "Trips to {{name}}",
+      "noTrips": "No trips planned to {{name}} yet",
+      "planButton": "Plan a Trip",
+      "travelers": "{{current}}/{{max}} travelers"
+    },
+    "bestTime": "Best Time to Visit",
+    "planYourTrip": {
+      "title": "Plan Your Trip",
+      "create": "Create Trip to {{name}}",
+      "find": "Find Travel Buddies"
+    },
+    "travelTips": {
+      "title": "Travel Tips",
+      "tip1": "Book accommodations in advance during peak season",
+      "tip2": "Try local cuisine and specialties",
+      "tip3": "Respect local customs and traditions",
+      "tip4": "Carry valid ID for hotel check-ins",
+      "tip5": "Keep emergency contacts handy"
+    }
+  }
+}

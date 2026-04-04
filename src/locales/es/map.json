@@ -1,0 +1,75 @@
+{
+  "header": {
+    "title": "Explora la India Increíble",
+    "subtitle": "Descubre la rica cultura, el patrimonio y la belleza natural de los 28 estados y 8 territorios de la unión de la India"
+  },
+  "controls": {
+    "searchPlaceholder": "Buscar estados, abreviaturas o capitales...",
+    "allRegions": "Todas las regiones"
+  },
+  "info": {
+    "defaultTitle": "Mapa Interactivo de la India",
+    "defaultDesc": "Haz clic en cualquier estado o territorio de la unión para explorar su cultura, historia y atracciones únicas.",
+    "stats": {
+      "states": "Estados",
+      "uts": "Territorios de la Unión",
+      "totalRegions": "Regiones Totales:",
+      "filteredResults": "Resultados Filtrados:"
+    },
+    "tip": "Consejo: Usa las opciones de búsqueda y filtro para encontrar estados específicos rápidamente.",
+    "labels": {
+      "state": "Estado",
+      "ut": "Territorio de la Unión",
+      "availablePlaces": "Lugares Disponibles",
+      "currentWeather": "Clima Actual",
+      "topHighlights": "Lo más Destacado",
+      "bestTime": "Mejor Época para Visitar"
+    }
+  },
+  "regions": {
+    "all": "Todas las regiones",
+    "Northern": "Norte",
+    "Western": "Oeste",
+    "Central": "Centro",
+    "Eastern": "Este",
+    "Southern": "Sur",
+    "Northeastern": "Noreste",
+    "Islands": "Islas"
+  },
+  "grid": {
+    "title": "Estados y Territorios de la Unión",
+    "regionStates": "Estados de {{region}}",
+    "placesCount": "{{count}} lugares"
+  },
+  "detail": {
+    "back": "Volver al mapa",
+    "loading": "Cargando información del estado...",
+    "findBuddies": {
+      "title": "Encontrar compañeros de viaje",
+      "subtitle": "Conéctate con otros viajeros que planean visitar {{name}}",
+      "button": "Encontrar compañeros de viaje"
+    },
+    "about": "Acerca de {{name}}",
+    "attractions": "Principales atracciones",
+    "trips": {
+      "title": "Viajes a {{name}}",
+      "noTrips": "Aún no hay viajes planeados a {{name}}",
+      "planButton": "Planear un viaje",
+      "travelers": "{{current}}/{{max}} viajeros"
+    },
+    "bestTime": "Mejor época para visitar",
+    "planYourTrip": {
+      "title": "Planea tu viaje",
+      "create": "Crear viaje a {{name}}",
+      "find": "Encontrar compañeros de viaje"
+    },
+    "travelTips": {
+      "title": "Consejos de viaje",
+      "tip1": "Reserve alojamiento con anticipación durante la temporada alta",
+      "tip2": "Pruebe la cocina local y las especialidades",
+      "tip3": "Respete las costumbres y tradiciones locales",
+      "tip4": "Lleve una identificación válida para el check-in en el hotel",
+      "tip5": "Tenga a mano los contactos de emergencia"
+    }
+  }
+}

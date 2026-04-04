@@ -1,0 +1,12 @@
+{
+  "places": "Places",
+  "interactiveMap": "Interactive Map",
+  "trips": "Trips",
+  "profile": "Profile",
+  "demo": "Demo",
+  "help": "Help",
+  "header": {
+    "welcome": "Welcome back, {{name}}!",
+    "signInPrompt": "Sign In"
+  }
+}

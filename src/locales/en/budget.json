@@ -1,0 +1,40 @@
+{
+  "title": "Budget Planner",
+  "backToTrip": "Back to Trip",
+  "createTitle": "Create Your Budget",
+  "noBudget": "No Budget Set Yet",
+  "noBudgetDesc": "The trip organizer is yet to initialize the budget for this trip.",
+  "overview": {
+    "total": "Total Budget",
+    "spent": "Total Spent",
+    "remaining": "Remaining"
+  },
+  "sections": {
+    "breakdown": "Category Breakdown",
+    "recentExpenses": "Recent Expenses"
+  },
+  "categories": {
+    "travel": "Travel",
+    "food": "Food",
+    "stay": "Stay",
+    "activities": "Activities",
+    "misc": "Miscellaneous"
+  },
+  "addExpense": {
+    "title": "Add Expense",
+    "category": "Category",
+    "amount": "Amount",
+    "description": "Description",
+    "descriptionPlaceholder": "e.g., Lunch at restaurant",
+    "date": "Date",
+    "submit": "Add Expense"
+  },
+  "messages": {
+    "created": "Budget created successfully!",
+    "expenseAdded": "Expense added successfully!",
+    "createError": "Failed to create budget",
+    "addError": "Failed to add expense",
+    "loading": "Loading budget...",
+    "noExpenses": "No expenses recorded yet"
+  }
+}

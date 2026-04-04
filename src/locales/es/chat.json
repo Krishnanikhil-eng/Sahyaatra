@@ -1,0 +1,29 @@
+{
+  "title": "Sahyaatra AI",
+  "welcome": "¡Hola! Soy tu asistente de IA de Sahyaatra. Puedo ayudarte con:\n\n• Planificación de viajes e itinerarios\n• Encontrar compañeros de viaje\n• Consejos sobre presupuesto\n• Recomendaciones de destinos\n• Información y consejos locales\n\n¿Qué te gustaría saber?",
+  "error": "Lo siento, tengo problemas para responder en este momento. Por favor, inténtalo de nuevo o utiliza las otras funciones de la plataforma para planificar tu viaje.",
+  "page": {
+    "tripChat": "Chat del viaje",
+    "membersCount": "{{count}} miembros",
+    "participants": "Participantes",
+    "loading": "Cargando chat..."
+  },
+  "ai": {
+    "label": "Asistente de viaje IA",
+    "placeholder": "Pregunta a la IA sobre tu viaje, lugares para visitar, consejos de presupuesto...",
+    "askButton": "Preguntar a la IA",
+    "success": "¡Respuesta de la IA añadida al chat!",
+    "error": "Error al obtener respuesta de la IA"
+  },
+  "messages": {
+    "placeholder": "Escribe tu mensaje..."
+  },
+  "qr": {
+    "button": "QR de verificación del viaje",
+    "modalTitle": "Verificación del viaje",
+    "modalSubtitle": "Pide a un compañero de viaje que escanee este QR para verificar el viaje.",
+    "modalInfo": "Este QR contiene un enlace de verificación seguro solo para este viaje.",
+    "errorBaseUrl": "La verificación del viaje no está disponible temporalmente. Por favor, contacta con soporte.",
+    "errorGenerate": "Error al generar el QR de verificación"
+  }
+}

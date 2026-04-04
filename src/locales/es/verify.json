@@ -1,0 +1,13 @@
+{
+  "title": "Viaje Verificado",
+  "successSubtitle": "Este es un viaje de co-viajero verificado",
+  "failedTitle": "Verificación Fallida",
+  "failedSubtitle": "Verificación de viaje inválida o inactiva",
+  "details": {
+    "destination": "Destino",
+    "status": "Estado"
+  },
+  "error": "El enlace de verificación que siguió no es válido, ha caducado o el viaje ya no está activo.",
+  "backHome": "Volver al inicio",
+  "footer": "Sistema Seguro de Verificación de Viajes • Smart-BU"
+}

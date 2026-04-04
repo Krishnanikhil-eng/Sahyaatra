@@ -1,0 +1,29 @@
+{
+  "title": "Sahyaatra AI",
+  "welcome": "Hi! I'm your Sahyaatra AI assistant. I can help you with:\n\n• Planning trips and itineraries\n• Finding travel buddies\n• Budget advice\n• Destination recommendations\n• Local insights and tips\n\nWhat would you like to know?",
+  "error": "I'm sorry, I'm having trouble responding right now. Please try again or use the platform's other features to plan your trip.",
+  "page": {
+    "tripChat": "Trip Chat",
+    "membersCount": "{{count}} members",
+    "participants": "Participants",
+    "loading": "Loading chat..."
+  },
+  "ai": {
+    "label": "AI Travel Assistant",
+    "placeholder": "Ask AI about your trip, places to visit, budget tips...",
+    "askButton": "Ask AI",
+    "success": "AI response added to chat!",
+    "error": "Failed to get AI response"
+  },
+  "messages": {
+    "placeholder": "Type your message..."
+  },
+  "qr": {
+    "button": "Trip Verification QR",
+    "modalTitle": "Trip Verification",
+    "modalSubtitle": "Ask a co-traveler to scan this QR to verify the trip.",
+    "modalInfo": "This QR contains a secure verification link for this trip only.",
+    "errorBaseUrl": "Trip verification is temporarily unavailable. Please contact support.",
+    "errorGenerate": "Failed to generate verification QR"
+  }
+}

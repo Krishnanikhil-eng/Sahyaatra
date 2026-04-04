@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { MapPin, Calendar, Users, FileText, Tag, UserPlus, X, Search } from "lucide-react";
 import { PageBackground } from "../components/PageBackground";
+import { useTranslation } from "react-i18next";
 
 interface InvitedFriend {
   userId: string;
@@ -13,6 +14,7 @@ interface InvitedFriend {
 }
 
 export function CreateTrip() {
+  const { t } = useTranslation(['trips', 'common']);
   const navigate = useNavigate();
   const location = useLocation();
   const createTrip = useMutation(api.trips.createTrip);
@@ -94,11 +96,11 @@ export function CreateTrip() {
 
   const handleInviteFriend = (friend: InvitedFriend) => {
     if (!canInviteMore) {
-      toast.error("All spots are filled! Increase max travelers to invite more friends.");
+      toast.error(t('trips:messages.spotsFilledError'));
       return;
     }
     if (invitedFriends.some((f) => f.userId === friend.userId)) {
-      toast.info("This person is already invited.");
+      toast.info(t('trips:messages.alreadyInvited'));
       return;
     }
     setInvitedFriends((prev) => [...prev, friend]);
@@ -114,17 +116,17 @@ export function CreateTrip() {
     e.preventDefault();
 
     if (!formData.destination || !formData.startDate || !formData.endDate || !formData.budget) {
-      toast.error("Please fill in all required fields");
+      toast.error(t('trips:messages.fillRequired'));
       return;
     }
 
     if (new Date(formData.startDate) >= new Date(formData.endDate)) {
-      toast.error("End date must be after start date");
+      toast.error(t('trips:messages.dateError'));
       return;
     }
 
     if (formData.interests.length === 0) {
-      toast.error("Please select at least one interest");
+      toast.error(t('trips:messages.interestError'));
       return;
     }
 
@@ -145,14 +147,14 @@ export function CreateTrip() {
           : undefined,
       });
 
-      toast.success("Trip created successfully!");
+      toast.success(t('trips:messages.createSuccess'));
       if (returnUrl) {
         navigate(returnUrl, { replace: true });
       } else {
         navigate(`/trips/${tripId}`);
       }
     } catch (error) {
-      toast.error("Failed to create trip. Please try again.");
+      toast.error(t('trips:messages.createError'));
       // eslint-disable-next-line no-console
       console.error("Error creating trip:", error);
     } finally {
@@ -165,6 +167,8 @@ export function CreateTrip() {
     (user) => !invitedFriends.some((f) => f.userId === user.userId)
   );
 
+  const travelerOptions = ["2", "3", "4", "5", "6", "8", "10"];
+
   return (
     <PageBackground query="travel planning">
       <div className="min-h-screen py-8">
@@ -172,33 +176,33 @@ export function CreateTrip() {
           <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg p-8">
             {returnUrl && (
               <div className="mb-4 p-3 rounded-lg bg-blue-50 text-blue-700 text-sm flex items-center justify-between">
-                <span>You started creating a trip from another page.</span>
+                <span>{t('trips:create.returnNotice')}</span>
                 <button
                   type="button"
                   className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
                   onClick={() => navigate(returnUrl!)}
                 >
-                  Back
+                  {t('trips:create.back')}
                 </button>
               </div>
             )}
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Your Trip</h1>
-              <p className="text-gray-600">Share your travel plans and find amazing travel buddies</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('trips:create.title')}</h1>
+              <p className="text-gray-600">{t('trips:create.subtitle')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <MapPin className="w-4 h-4 inline mr-1" />
-                  Destination *
+                  {t('trips:create.destination')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.destination}
                   onChange={(e) => setFormData((prev) => ({ ...prev, destination: e.target.value }))}
-                  placeholder="e.g., Goa, Manali, Kerala"
+                  placeholder={t('trips:create.destinationPlaceholder')}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -207,7 +211,7 @@ export function CreateTrip() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4 inline mr-1" />
-                    Start Date *
+                    {t('trips:create.startDate')} *
                   </label>
                   <input
                     type="date"
@@ -221,7 +225,7 @@ export function CreateTrip() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4 inline mr-1" />
-                    End Date *
+                    {t('trips:create.endDate')} *
                   </label>
                   <input
                     type="date"
@@ -238,7 +242,7 @@ export function CreateTrip() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <span className="inline mr-1">₹</span>
-                    Budget per person (₹) *
+                    {t('trips:create.budget')} *
                   </label>
                   <input
                     type="number"
@@ -246,14 +250,14 @@ export function CreateTrip() {
                     min={100}
                     value={formData.budget}
                     onChange={(e) => setFormData((prev) => ({ ...prev, budget: e.target.value }))}
-                    placeholder="15000"
+                    placeholder={t('trips:create.budgetPlaceholder')}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Users className="w-4 h-4 inline mr-1" />
-                    Max Travelers
+                    {t('trips:create.maxTravelers')}
                   </label>
                   <select
                     value={formData.maxTravelers}
@@ -263,18 +267,16 @@ export function CreateTrip() {
                       // Trim invited friends if new max is smaller
                       if (invitedFriends.length >= newMax) {
                         setInvitedFriends((prev) => prev.slice(0, newMax - 1));
-                        toast.info("Some invited friends were removed because the group size decreased.");
+                        toast.info(t('trips:messages.friendsRemoved'));
                       }
                     }}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="2">2 people</option>
-                    <option value="3">3 people</option>
-                    <option value="4">4 people</option>
-                    <option value="5">5 people</option>
-                    <option value="6">6 people</option>
-                    <option value="8">8 people</option>
-                    <option value="10">10 people</option>
+                    {travelerOptions.map(opt => (
+                      <option key={opt} value={opt}>
+                        {t('trips:create.maxTravelersOption', { count: Number(opt) })}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -283,7 +285,7 @@ export function CreateTrip() {
               <div className="border border-blue-200 bg-blue-50/50 rounded-xl p-5">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
                   <UserPlus className="w-4 h-4 inline mr-1" />
-                  Traveling With
+                  {t('trips:create.travelingWith')}
                 </label>
 
                 {/* Search Input */}
@@ -300,8 +302,8 @@ export function CreateTrip() {
                       onFocus={() => setShowDropdown(true)}
                       placeholder={
                         canInviteMore
-                          ? "Search friends by name…"
-                          : "All spots filled — increase max travelers to invite more"
+                          ? t('trips:create.searchFriends')
+                          : t('trips:create.spotsFilled')
                       }
                       disabled={!canInviteMore}
                       className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
@@ -341,7 +343,7 @@ export function CreateTrip() {
                         ))
                       ) : (
                         <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                          No users found
+                          {t('trips:create.noUsersFound')}
                         </div>
                       )}
                     </div>
@@ -385,7 +387,7 @@ export function CreateTrip() {
                   <div className="flex items-center gap-2 text-gray-600">
                     <Users className="w-4 h-4" />
                     <span>
-                      You{invitedFriends.length > 0 && ` + ${invitedFriends.length} friend${invitedFriends.length > 1 ? "s" : ""}`}
+                      {t('common:labels.you') || 'You'}{invitedFriends.length > 0 && ` + ${invitedFriends.length} ${invitedFriends.length > 1 ? t('common:labels.friends') || 'friends' : t('common:labels.friend') || 'friend'}`}
                     </span>
                   </div>
                   <div
@@ -396,8 +398,8 @@ export function CreateTrip() {
                     }`}
                   >
                     {openSlots > 0
-                      ? `${openSlots} open slot${openSlots > 1 ? "s" : ""} for co-travelers`
-                      : "Group is full!"}
+                      ? t('trips:detail.openSlots', { count: openSlots })
+                      : t('trips:detail.groupFull')}
                   </div>
                 </div>
               </div>
@@ -405,12 +407,12 @@ export function CreateTrip() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <FileText className="w-4 h-4 inline mr-1" />
-                  Description
+                  {t('trips:create.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Tell others about your trip plans, what you're looking for in travel buddies, and any special requirements..."
+                  placeholder={t('trips:create.descriptionPlaceholder')}
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -419,7 +421,7 @@ export function CreateTrip() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   <Tag className="w-4 h-4 inline mr-1" />
-                  Interests *
+                  {t('trips:create.interests')} *
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {interests.map((interest) => (
@@ -431,15 +433,15 @@ export function CreateTrip() {
                         formData.interests.includes(interest) ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
-                      {interest}
+                      {t(`trips:interests.${interest}`) || interest}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Select interests that match your trip style</p>
+                <p className="text-xs text-gray-500 mt-2">{t('trips:create.interestsSubtitle')}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Trip Image (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('trips:create.image')}</label>
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors">
                   <div className="space-y-1 text-center">
                     <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -447,7 +449,7 @@ export function CreateTrip() {
                     </svg>
                     <div className="flex text-sm text-gray-600">
                       <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
-                        <span>Upload a file</span>
+                        <span>{t('trips:create.imageUpload')}</span>
                         <input
                           id="file-upload"
                           name="file-upload"
@@ -472,9 +474,9 @@ export function CreateTrip() {
                           }}
                         />
                       </label>
-                      <p className="pl-1">or drag and drop</p>
+                      <p className="pl-1">{t('trips:create.imageDragDrop')}</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-gray-500">{t('trips:create.imageTypeDesc')}</p>
                   </div>
                 </div>
                 {formData.imageUrl && (
@@ -490,7 +492,7 @@ export function CreateTrip() {
                   disabled={isSubmitting}
                   className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  {isSubmitting ? "Creating Trip..." : "Create Trip"}
+                  {isSubmitting ? t('trips:create.submitting') : t('trips:create.submit')}
                 </button>
               </div>
             </form>

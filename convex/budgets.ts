@@ -38,11 +38,28 @@ export const getTripBudget = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
+    // Check if user is participant
+    const trip = await ctx.db.get(args.tripId);
+    if (!trip) return null;
+
+    const isAuthor = trip.authorId === userId;
+    const acceptedRequest = await ctx.db
+      .query("tripRequests")
+      .withIndex("by_trip_and_requester", (q) => q.eq("tripId", args.tripId).eq("requesterId", userId))
+      .filter(q => q.eq(q.field("status"), "accepted"))
+      .unique();
+    const isInvited = trip.invitedFriends?.includes(userId);
+
+    if (!isAuthor && !acceptedRequest && !isInvited) {
+      return null;
+    }
+
+    // Return the default budget for the trip (usually created by author)
+    // If no budget exists, anyone authorized can create one
     return await ctx.db
       .query("budgets")
       .withIndex("by_trip", (q) => q.eq("tripId", args.tripId))
-      .filter((q) => q.eq(q.field("userId"), userId))
-      .unique();
+      .first(); // Get the first budget created for this trip
   },
 });
 
@@ -66,10 +83,23 @@ export const addExpense = mutation({
       throw new Error("Must be logged in");
     }
 
-    // Verify budget belongs to user
+    // Verify user is a participant of the trip this budget belongs to
     const budget = await ctx.db.get(args.budgetId);
-    if (!budget || budget.userId !== userId) {
-      throw new Error("Budget not found or not authorized");
+    if (!budget) throw new Error("Budget not found");
+
+    const trip = await ctx.db.get(budget.tripId);
+    if (!trip) throw new Error("Trip not found");
+
+    const isAuthor = trip.authorId === userId;
+    const acceptedRequest = await ctx.db
+      .query("tripRequests")
+      .withIndex("by_trip_and_requester", (q) => q.eq("tripId", trip._id).eq("requesterId", userId))
+      .filter(q => q.eq(q.field("status"), "accepted"))
+      .unique();
+    const isInvited = trip.invitedFriends?.includes(userId);
+
+    if (!isAuthor && !acceptedRequest && !isInvited) {
+      throw new Error("Not authorized to add expenses to this trip");
     }
 
     const expenseId = await ctx.db.insert("expenses", {
@@ -90,9 +120,23 @@ export const getBudgetExpenses = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    // Verify budget belongs to user
+    // Verify budget exists
     const budget = await ctx.db.get(args.budgetId);
-    if (!budget || budget.userId !== userId) {
+    if (!budget) return [];
+
+    // Verify user is a participant of the trip
+    const trip = await ctx.db.get(budget.tripId);
+    if (!trip) return [];
+
+    const isAuthor = trip.authorId === userId;
+    const acceptedRequest = await ctx.db
+      .query("tripRequests")
+      .withIndex("by_trip_and_requester", (q) => q.eq("tripId", trip._id).eq("requesterId", userId))
+      .filter(q => q.eq(q.field("status"), "accepted"))
+      .unique();
+    const isInvited = trip.invitedFriends?.includes(userId);
+
+    if (!isAuthor && !acceptedRequest && !isInvited) {
       return [];
     }
 
@@ -111,7 +155,20 @@ export const getBudgetSummary = query({
     if (!userId) return null;
 
     const budget = await ctx.db.get(args.budgetId);
-    if (!budget || budget.userId !== userId) {
+    if (!budget) return null;
+
+    const trip = await ctx.db.get(budget.tripId);
+    if (!trip) return null;
+
+    const isAuthor = trip.authorId === userId;
+    const acceptedRequest = await ctx.db
+      .query("tripRequests")
+      .withIndex("by_trip_and_requester", (q) => q.eq("tripId", trip._id).eq("requesterId", userId))
+      .filter(q => q.eq(q.field("status"), "accepted"))
+      .unique();
+    const isInvited = trip.invitedFriends?.includes(userId);
+
+    if (!isAuthor && !acceptedRequest && !isInvited) {
       return null;
     }
 

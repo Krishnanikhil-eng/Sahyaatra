@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 
 export function SignInForm() {
   const { signIn } = useAuthActions();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['auth', 'common']);
   const [step, setStep] = useState<"signIn" | "signUp" | "verify">("signIn");
   const [submitting, setSubmitting] = useState(false);
   
@@ -42,8 +42,8 @@ export function SignInForm() {
         await signIn("password", formData);
       } catch (error: any) {
         toast.error(error.message.includes("Invalid password") 
-          ? t('toast.invalidPassword')
-          : t('toast.signInFailed'));
+          ? t('auth:toast.invalidPassword')
+          : t('auth:toast.signInFailed'));
         setSubmitting(false);
       }
     } else if (step === "signUp") {
@@ -55,14 +55,14 @@ export function SignInForm() {
         const devMode = (response as any)?.devMode ?? false;
         setIsDevMode(devMode);
         if (devMode) {
-          toast.info(t('toast.devModeCode'));
+          toast.info(t('auth:toast.devModeCode'));
         } else {
-          toast.success(t('toast.codeSentEmail'));
+          toast.success(t('auth:toast.codeSentEmail'));
         }
         setStep("verify");
         startResendCooldown();
       } catch (error: any) {
-        toast.error(error.message || t('toast.sendCodeFailed'));
+        toast.error(error.message || t('auth:toast.sendCodeFailed'));
       } finally {
         setSubmitting(false);
       }
@@ -72,7 +72,7 @@ export function SignInForm() {
   const handleVerifySubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (verificationCode.length !== 6) {
-      toast.error(t('toast.codeMustBe6'));
+      toast.error(t('auth:toast.codeMustBe6'));
       return;
     }
 
@@ -97,10 +97,10 @@ export function SignInForm() {
       
       // 3. Successfully created. Immediately flag the profile as verified to let them in!
       await markProfileVerified({ email: pendingEmail });
-      toast.success(t('toast.accountCreated'));
+      toast.success(t('auth:toast.accountCreated'));
 
     } catch (error: any) {
-      toast.error(t('toast.verifyFailed'));
+      toast.error(t('auth:toast.verifyFailed'));
       setSubmitting(false);
     }
   };
@@ -123,10 +123,10 @@ export function SignInForm() {
     try {
       setSubmitting(true);
       await sendPreSignupCode({ email: pendingEmail });
-      toast.success(t('toast.codeResent'));
+      toast.success(t('auth:toast.codeResent'));
       startResendCooldown();
     } catch (error: any) {
-      toast.error(t('toast.resendFailed'));
+      toast.error(t('auth:toast.resendFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -135,16 +135,16 @@ export function SignInForm() {
   if (step === "verify") {
     return (
       <div className="w-full text-center">
-        <h3 className="text-xl font-bold mb-2">{t('verify.title')}</h3>
+        <h3 className="text-xl font-bold mb-2">{t('auth:verify.title')}</h3>
         <p className="text-sm text-gray-600 mb-4">
           {isDevMode 
-            ? <span dangerouslySetInnerHTML={{ __html: t('verify.codeSentConsole', { email: pendingEmail }) }} />
-            : <span dangerouslySetInnerHTML={{ __html: t('verify.codeSentEmail', { email: pendingEmail }) }} />
+            ? <span dangerouslySetInnerHTML={{ __html: t('auth:verify.codeSentConsole', { email: pendingEmail }) }} />
+            : <span dangerouslySetInnerHTML={{ __html: t('auth:verify.codeSentEmail', { email: pendingEmail }) }} />
           }
         </p>
         {isDevMode && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4 text-xs text-amber-700">
-            {t('verify.devModeNotice')}
+            {t('auth:verify.devModeNotice')}
           </div>
         )}
 
@@ -152,7 +152,7 @@ export function SignInForm() {
           <input
             type="text"
             className="auth-input-field text-center font-mono tracking-widest text-lg"
-            placeholder={t('verify.placeholder')}
+            placeholder={t('auth:verify.placeholder')}
             maxLength={6}
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value.replace(/[^0-9]/g, ""))}
@@ -160,7 +160,7 @@ export function SignInForm() {
             disabled={submitting}
           />
           <button className="auth-button" type="submit" disabled={submitting || verificationCode.length !== 6}>
-            {submitting ? t('verify.verifying') : t('verify.verifyButton')}
+            {submitting ? t('auth:verify.verifying') : t('auth:verify.verifyButton')}
           </button>
         </form>
 
@@ -171,7 +171,7 @@ export function SignInForm() {
             onClick={handleResendCode}
             disabled={submitting || resendCooldown > 0}
           >
-            {resendCooldown > 0 ? t('verify.resendIn', { seconds: resendCooldown }) : t('verify.resendCode')}
+            {resendCooldown > 0 ? t('auth:verify.resendIn', { seconds: resendCooldown }) : t('auth:verify.resendCode')}
           </button>
           <button
             type="button"
@@ -179,7 +179,7 @@ export function SignInForm() {
             onClick={() => setStep("signUp")}
             disabled={submitting}
           >
-            {t('verify.changeEmail')}
+            {t('auth:verify.changeEmail')}
           </button>
         </div>
       </div>
@@ -196,32 +196,32 @@ export function SignInForm() {
           className="auth-input-field"
           type="email"
           name="email"
-          placeholder={t('auth.email')}
+          placeholder={t('auth:auth.email')}
           required
         />
         <input
           className="auth-input-field"
           type="password"
           name="password"
-          placeholder={t('auth.password')}
+          placeholder={t('auth:auth.password')}
           required
         />
         <button className="auth-button" type="submit" disabled={submitting}>
-          {step === "signIn" ? t('auth.signIn') : t('auth.signUp')}
+          {step === "signIn" ? t('auth:auth.signIn') : t('auth:auth.signUp')}
         </button>
         
         <div className="text-center text-sm text-secondary">
           <span>
             {step === "signIn"
-              ? t('auth.noAccount')
-              : t('auth.hasAccount')}
+              ? t('auth:auth.noAccount')
+              : t('auth:auth.hasAccount')}
           </span>
           <button
             type="button"
             className="text-primary hover:text-primary-hover hover:underline font-medium cursor-pointer"
             onClick={() => setStep(step === "signIn" ? "signUp" : "signIn")}
           >
-            {step === "signIn" ? t('auth.signUpInstead') : t('auth.signInInstead')}
+            {step === "signIn" ? t('auth:auth.signUpInstead') : t('auth:auth.signInInstead')}
           </button>
         </div>
 
@@ -233,7 +233,7 @@ export function SignInForm() {
               className="text-xs text-secondary hover:text-primary hover:underline cursor-pointer"
               onClick={() => setStep("verify")}
             >
-              {t('auth.haveCode')}
+              {t('auth:auth.haveCode')}
             </button>
           </div>
         )}

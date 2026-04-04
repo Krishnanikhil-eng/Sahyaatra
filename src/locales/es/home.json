@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "badge": "Descubre las Joyas Ocultas de la India",
+    "title": "Explora",
+    "titleAccent": "India Increíble",
+    "subtitle": "Descubre más de 9,000 destinos turísticos asombrosos en toda la India con recomendaciones impulsadas por IA, fotografías impresionantes e información de viaje completa."
+  },
+  "buttons": {
+    "map": "Mapa Interactivo",
+    "browse": "Explorar Lugares",
+    "plan": "Planificar Viaje"
+  },
+  "stats": {
+    "destinations": "9,000+",
+    "destinationsLabel": "Destinos Turísticos",
+    "states": "36+",
+    "statesLabel": "Estados y Territorios",
+    "ai": "Impulsado por IA",
+    "aiLabel": "Recomendaciones de Viaje"
+  },
+  "features": {
+    "title": "Todo lo que Necesitas para un Viaje Perfecto",
+    "subtitle": "Desde descubrir joyas ocultas hasta planificar tu itinerario, te cubrimos con tecnología de vanguardia.",
+    "map": {
+      "title": "Mapa Interactivo",
+      "desc": "Explora la India con nuestro hermoso mapa interactivo SVG. Haz clic en cualquier estado para descubrir sus destinos turísticos."
+    },
+    "planning": {
+      "title": "Planificación Inteligente",
+      "desc": "Crea y gestiona tus itinerarios de viaje con sugerencias de IA y actualizaciones en tiempo real."
+    },
+    "ai": {
+      "title": "Asistente de IA",
+      "desc": "Obtén consejos de viaje personalizados y recomendaciones de nuestro avanzado asistente de viaje de IA."
+    },
+    "budget": {
+      "title": "Calculadora de Presupuesto",
+      "desc": "Sigue tus gastos y planifica tu presupuesto de viaje con nuestra calculadora de gastos inteligente."
+    }
+  },
+  "trips": {
+    "recentTitle": "Viajes Recientes",
+    "recentSubtitle": "Únete a viajes emocionantes planificados por otros viajeros",
+    "viewAll": "Ver todos los viajes",
+    "none": "No hay viajes aún",
+    "noneDesc": "¡Sé el primero en planificar un viaje increíble y conectarte con otros viajeros!",
+    "createFirst": "Crear Primer Viaje"
+  },
+  "cta": {
+    "title": "¿Listo para explorar la India?",
+    "desc": "Únete a miles de viajeros que han descubierto lugares increíbles con Sahyaatra. ¡Comienza tu viaje hoy!",
+    "button": "Comenzar con el Mapa Interactivo"
+  }
+}

@@ -2,13 +2,21 @@ import { Link, useLocation } from "react-router-dom";
 import { MapPin, Users, MessageCircle, Calculator, User, Sparkles, Compass, HelpCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export function Navigation() {
+interface NavigationProps {
+  direction?: 'row' | 'col';
+}
+
+export function Navigation({ direction = 'row' }: NavigationProps) {
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t } = useTranslation(['nav']);
   const isActive = (path: string) => location.pathname === path;
 
+  const navClasses = direction === 'row' 
+    ? "hidden md:flex items-center space-x-6" 
+    : "flex flex-col space-y-2";
+
   return (
-    <nav className="hidden md:flex items-center space-x-6">
+    <nav className={navClasses}>
       <Link
         to="/places"
         className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${isActive('/places')
@@ -17,7 +25,7 @@ export function Navigation() {
           }`}
       >
         <Compass className="w-4 h-4" />
-        <span>{t('nav.places')}</span>
+        <span>{t('nav:places')}</span>
       </Link>
       <Link
         to="/places/map"
@@ -27,7 +35,7 @@ export function Navigation() {
           }`}
       >
         <MapPin className="w-4 h-4" />
-        <span>{t('nav.interactiveMap')}</span>
+        <span>{t('nav:interactiveMap')}</span>
       </Link>
       <Link
         to="/trips"
@@ -37,7 +45,7 @@ export function Navigation() {
           }`}
       >
         <Users className="w-4 h-4" />
-        <span>{t('nav.trips')}</span>
+        <span>{t('nav:trips')}</span>
       </Link>
       <Link
         to="/profile"
@@ -47,7 +55,7 @@ export function Navigation() {
           }`}
       >
         <User className="w-4 h-4" />
-        <span>{t('nav.profile')}</span>
+        <span>{t('nav:profile')}</span>
       </Link>
       <Link
         to="/demo"
@@ -57,7 +65,7 @@ export function Navigation() {
           }`}
       >
         <Sparkles className="w-4 h-4" />
-        <span>{t('nav.demo')}</span>
+        <span>{t('nav:demo')}</span>
       </Link>
       <Link
         to="/help"
@@ -67,7 +75,7 @@ export function Navigation() {
           }`}
       >
         <HelpCircle className="w-4 h-4" />
-        <span>{t('nav.help')}</span>
+        <span>{t('nav:help')}</span>
       </Link>
     </nav>
   );

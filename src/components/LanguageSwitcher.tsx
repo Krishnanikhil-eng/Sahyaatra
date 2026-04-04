@@ -1,29 +1,40 @@
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 
-const languages = [
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-];
-
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
 
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    // Persist language exactly as requested, though i18next-browser-languagedetector
+    // will also do this using 'i18nextLng' by default since we added 'localStorage' cache.
+    // For exact match to user requirement ("Persist selected language via localStorage"):
+    localStorage.setItem('i18nextLng', lng);
+  };
+
   return (
-    <div className="flex items-center space-x-1.5">
+    <div className="flex items-center space-x-2">
       <Globe className="w-4 h-4 text-gray-500" />
-      <select
-        id="language-switcher"
-        value={i18n.language}
-        onChange={(e) => i18n.changeLanguage(e.target.value)}
-        className="text-sm bg-white border border-gray-200 rounded-md px-2 py-1 text-gray-700 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors cursor-pointer"
+      <button
+        onClick={() => changeLanguage('en')}
+        className={`px-2 py-1 text-sm rounded ${
+          i18n.language === 'en' || i18n.language?.startsWith('en')
+            ? 'bg-blue-600 text-white font-medium'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        }`}
       >
-        {languages.map((lang) => (
-          <option key={lang.code} value={lang.code}>
-            {lang.label}
-          </option>
-        ))}
-      </select>
+        EN
+      </button>
+      <button
+        onClick={() => changeLanguage('es')}
+        className={`px-2 py-1 text-sm rounded ${
+          i18n.language === 'es' || i18n.language?.startsWith('es')
+            ? 'bg-blue-600 text-white font-medium'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        }`}
+      >
+        ES
+      </button>
     </div>
   );
 }

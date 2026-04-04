@@ -1,0 +1,540 @@
+{
+  ",": ",",
+  "@": "@",
+  "T": " T",
+  "_": "_",
+  "auth": {
+    "auth": {
+      "email": "Email Address",
+      "hasAccount": "Already have an account?",
+      "haveCode": "Already have a verification code?",
+      "noAccount": "Don't have an account?",
+      "password": "Password",
+      "signIn": "Sign In",
+      "signInInstead": "Sign in",
+      "signUp": "Sign Up",
+      "signUpInstead": "Sign up"
+    },
+    "signInPrompt": "Sign In Prompt",
+    "signOut": "Sign Out",
+    "toast": {
+      "accountCreated": "Account created successfully!",
+      "codeMustBe6": "Verification code must be 6 digits",
+      "codeResent": "Verification code resent!",
+      "codeSentEmail": "Verification code sent to your email!",
+      "devModeCode": "Development Mode: Check console for code!",
+      "invalidPassword": "Invalid password. Please try again.",
+      "resendFailed": "Failed to resend code",
+      "sendCodeFailed": "Failed to send verification code",
+      "signInFailed": "Sign in failed. Please check your credentials.",
+      "verifyFailed": "Verification failed"
+    },
+    "verify": {
+      "changeEmail": "Change email address",
+      "codeSentConsole": "Check your <strong>terminal/console</strong> for the verification code sent to {{email}}",
+      "codeSentEmail": "We've sent a 6-digit code to <strong>{{email}}</strong>",
+      "devModeNotice": "Development Mode: Emails are logged to the console instead of being sent.",
+      "placeholder": "Enter 6-digit code",
+      "resendCode": "Resend Code",
+      "resendIn": "Resend code in {{seconds}}s",
+      "title": "Verify your email",
+      "verifyButton": "Verify & Create Account",
+      "verifying": "Verifying..."
+    },
+    "welcome": "Welcome"
+  },
+  "budget": {
+    "addExpense": {
+      "amount": "Amount",
+      "category": "Category",
+      "date": "Date",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g., Lunch at restaurant",
+      "submit": "Add Expense",
+      "title": "Add Expense"
+    },
+    "backToTrip": "Back to Trip",
+    "categories": {
+      "activities": "Activities",
+      "food": "Food",
+      "misc": "Miscellaneous",
+      "stay": "Stay",
+      "travel": "Travel"
+    },
+    "createTitle": "Create Your Budget",
+    "messages": {
+      "addError": "Failed to add expense",
+      "createError": "Failed to create budget",
+      "created": "Budget created successfully!",
+      "expenseAdded": "Expense added successfully!",
+      "loading": "Loading budget...",
+      "noExpenses": "No expenses recorded yet"
+    },
+    "noBudget": "No Budget Set Yet",
+    "noBudgetDesc": "The trip organizer is yet to initialize the budget for this trip.",
+    "overview": {
+      "remaining": "Remaining",
+      "spent": "Total Spent",
+      "total": "Total Budget"
+    },
+    "sections": {
+      "breakdown": "Category Breakdown",
+      "recentExpenses": "Recent Expenses"
+    },
+    "title": "Budget Planner"
+  },
+  "chat": {
+    "ai": {
+      "askButton": "Ask AI",
+      "error": "Failed to get AI response",
+      "label": "AI Travel Assistant",
+      "placeholder": "Ask AI about your trip, places to visit, budget tips...",
+      "success": "AI response added to chat!"
+    },
+    "error": "I'm sorry, I'm having trouble responding right now. Please try again or use the platform's other features to plan your trip.",
+    "messages": {
+      "error": "Error",
+      "placeholder": "Type your message..."
+    },
+    "page": {
+      "loading": "Loading chat...",
+      "membersCount": "{{count}} members",
+      "participants": "Participants",
+      "tripChat": "Trip Chat"
+    },
+    "placeholder": "Placeholder",
+    "qr": {
+      "button": "Trip Verification QR",
+      "errorBaseUrl": "Trip verification is temporarily unavailable. Please contact support.",
+      "errorGenerate": "Failed to generate verification QR",
+      "modalInfo": "This QR contains a secure verification link for this trip only.",
+      "modalSubtitle": "Ask a co-traveler to scan this QR to verify the trip.",
+      "modalTitle": "Trip Verification"
+    },
+    "title": "Sahyaatra AI",
+    "welcome": "Hi! I'm your Sahyaatra AI assistant. I can help you with:\n\n• Planning trips and itineraries\n• Finding travel buddies\n• Budget advice\n• Destination recommendations\n• Local insights and tips\n\nWhat would you like to know?"
+  },
+  "common": {
+    "actions": {
+      "accept": "Accept",
+      "reject": "Reject"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "clearFilters": "Clear Filters",
+      "clearSelection": "Clear Selection",
+      "explore": "Explore {{name}}",
+      "interactiveMap": "Interactive Map",
+      "save": "Save Changes",
+      "website": "Website"
+    },
+    "cancel": "Cancel",
+    "labels": {
+      "checkDetails": "Check details",
+      "free": "Free",
+      "friend": "Friend",
+      "friends": "Friends",
+      "in": "in",
+      "name": "Name",
+      "state": "State",
+      "tip": "Tip",
+      "ut": "UT",
+      "yearRound": "Year Round",
+      "you": "You"
+    },
+    "messages": {
+      "error": "Error"
+    },
+    "status": {
+      "accepted": "Accepted"
+    },
+    "submitting": "Submitting",
+    "tagline": "Tagline",
+    "user": {
+      "friend": "friend"
+    }
+  },
+  "destination": "Destination",
+  "email": "Email",
+  "flow": "Flow",
+  "help": {
+    "categories": {
+      "emergency": {
+        "description": "Quick access to national helplines, police, and medical services.",
+        "title": "Emergency Contacts"
+      },
+      "report": {
+        "description": "Found a bug or need direct support? Send us a message.",
+        "title": "Report an Issue"
+      },
+      "safety": {
+        "description": "Best practices for meeting co-travelers and staying safe on your journey.",
+        "title": "Safety Guidelines"
+      }
+    },
+    "cta": {
+      "button": "Report an Issue",
+      "description": "Our team is here to support you 24/7. Connect with us through any of these channels.",
+      "title": "Still need help?"
+    },
+    "emergency": {
+      "ambulance": "Ambulance",
+      "child": "Child Helpline",
+      "international": "If traveling internationally, contact local emergency services.",
+      "national": "National Emergency",
+      "police": "Police",
+      "women": "Women Helpline"
+    },
+    "faq": {
+      "categories": {
+        "account": "Account",
+        "ai": "AI Features",
+        "all": "All",
+        "qr": "QR Verify",
+        "trips": "Trips"
+      },
+      "noArticles": "No articles found in this category.",
+      "title": "Frequently Asked Questions"
+    },
+    "hero": {
+      "subtitle": "Everything you need to know about using Sahyaatra and staying safe.",
+      "title": "Help Center"
+    },
+    "report": {
+      "error": "Failed to submit report. Please try again later.",
+      "form": {
+        "description": "Description",
+        "email": "Email",
+        "issueType": {
+          "ai": "AI itinerary issue",
+          "label": "Issue Type",
+          "other": "Other",
+          "qr": "QR verification failure",
+          "trip": "Trip management issue",
+          "user": "Suspicious user"
+        },
+        "name": "Name",
+        "placeholder": "Please describe the issue in detail...",
+        "submit": "Submit Report",
+        "title": "Report an Issue"
+      },
+      "successMessage": "Thank you for letting us know. We look into issues promptly to keep the community safe.",
+      "successTitle": "Report Submitted Successfully"
+    },
+    "safety": {
+      "guidelines": {
+        "activity": "Report suspicious activity immediately.",
+        "chat": "Use only in-app chat for communication.",
+        "numbers": "Refer to emergency numbers listed in the Help section.",
+        "passwords": "Do not share OTPs or passwords.",
+        "personal": "Avoid sharing sensitive personal information.",
+        "police": "Contact local authorities in unsafe situations.",
+        "public": "Meet in public locations first.",
+        "qr": "Use in-app QR verification before meeting.",
+        "save": "Keep emergency contacts saved.",
+        "share": "Share trip details with a trusted contact.",
+        "verify": "Verify the trip host profile."
+      },
+      "sections": {
+        "before": "Before Meeting Co-Travelers",
+        "digital": "Digital Safety",
+        "during": "During the Trip",
+        "emergency": "Emergency Protocol"
+      }
+    }
+  },
+  "home": {
+    "buttons": {
+      "browse": "Browse Places",
+      "map": "Interactive Map",
+      "plan": "Plan Trip"
+    },
+    "cta": {
+      "button": "Start with Interactive Map",
+      "desc": "Join thousands of travelers who have discovered amazing places with Sahyaatra. Start your journey today!",
+      "title": "Ready to Explore India?"
+    },
+    "features": {
+      "ai": {
+        "desc": "Get personalized travel advice and recommendations from our advanced AI travel assistant.",
+        "title": "AI Assistant"
+      },
+      "budget": {
+        "desc": "Track your expenses and plan your travel budget with our intelligent expense calculator.",
+        "title": "Budget Tracker"
+      },
+      "map": {
+        "desc": "Explore India with our beautiful interactive SVG map. Click on any state to discover its tourist destinations.",
+        "title": "Interactive Map"
+      },
+      "planning": {
+        "desc": "Create and manage your travel itineraries with AI-powered suggestions and real-time updates.",
+        "title": "Smart Planning"
+      },
+      "subtitle": "From discovering hidden gems to planning your itinerary, we've got you covered with cutting-edge technology.",
+      "title": "Everything You Need for Perfect Travel"
+    },
+    "hero": {
+      "badge": "Discover India's Hidden Gems",
+      "subtitle": "Discover 9,000+ amazing tourist destinations across India with AI-powered recommendations, stunning photography, and comprehensive travel information.",
+      "title": "Explore",
+      "titleAccent": "Incredible India"
+    },
+    "stats": {
+      "ai": "AI-Powered",
+      "aiLabel": "Travel Recommendations",
+      "destinations": "9,000+",
+      "destinationsLabel": "Tourist Destinations",
+      "states": "36+",
+      "statesLabel": "States & Union Territories"
+    },
+    "trips": {
+      "createFirst": "Create First Trip",
+      "none": "No trips yet",
+      "noneDesc": "Be the first to plan an amazing trip and connect with fellow travelers!",
+      "recentSubtitle": "Join exciting trips planned by fellow travelers",
+      "recentTitle": "Recent Trips",
+      "viewAll": "View all trips"
+    }
+  },
+  "map": {
+    "controls": {
+      "searchPlaceholder": "Search states, abbreviations, or capitals..."
+    },
+    "detail": {
+      "about": "About {{name}}",
+      "attractions": "Top Attractions",
+      "back": "Back to Map",
+      "bestTime": "Best Time to Visit",
+      "findBuddies": {
+        "button": "Find Travel Buddies",
+        "subtitle": "Connect with other travelers planning to visit {{name}}",
+        "title": "Find Co-Travellers"
+      },
+      "loading": "Loading state information...",
+      "planYourTrip": {
+        "create": "Create Trip to {{name}}",
+        "find": "Find Travel Buddies",
+        "title": "Plan Your Trip"
+      },
+      "travelTips": {
+        "tip1": "Book accommodations in advance during peak season",
+        "tip2": "Try local cuisine and specialties",
+        "tip3": "Respect local customs and traditions",
+        "tip4": "Carry valid ID for hotel check-ins",
+        "tip5": "Keep emergency contacts handy",
+        "title": "Travel Tips"
+      },
+      "trips": {
+        "noTrips": "No trips planned to {{name}} yet",
+        "planButton": "Plan a Trip",
+        "title": "Trips to {{name}}",
+        "travelers": "{{current}}/{{max}} travelers"
+      }
+    },
+    "grid": {
+      "placesCount": "{{count}} places",
+      "regionStates": "{{region}} States",
+      "title": "States & Union Territories"
+    },
+    "header": {
+      "subtitle": "Discover the rich culture, heritage, and natural beauty of all 28 states and 8 union territories of India",
+      "title": "Explore Incredible India"
+    },
+    "info": {
+      "defaultDesc": "Click on any state or union territory to explore its unique culture, history, and attractions.",
+      "defaultTitle": "Interactive India Map",
+      "labels": {
+        "availablePlaces": "Available Places",
+        "bestTime": "Best Time to Visit",
+        "currentWeather": "Current Weather",
+        "state": "State",
+        "topHighlights": "Top Highlights",
+        "ut": "Union Territory"
+      },
+      "stats": {
+        "filteredResults": "Filtered Results:",
+        "states": "States",
+        "totalRegions": "Total Regions:",
+        "uts": "Union Territories"
+      },
+      "tip": "Tip: Use the search and filter options to find specific states quickly."
+    }
+  },
+  "nav": {
+    "demo": "Demo",
+    "header": {
+      "signInPrompt": "Sign In",
+      "welcome": "Welcome back, {{name}}!"
+    },
+    "help": "Help",
+    "interactiveMap": "Interactive Map",
+    "places": "Places",
+    "profile": "Profile",
+    "trips": "Trips"
+  },
+  "password": "Password",
+  "places": {
+    "details": {
+      "bestTime": "Best Time to Visit",
+      "entry": "Entry"
+    },
+    "filters": {
+      "all": "All Places",
+      "allStates": "All States"
+    },
+    "noResults": "No places found matching your criteria",
+    "noResultsDesc": "No Results Desc",
+    "searchPlaceholder": "Search destinations, states, or categories...",
+    "showing": "Showing",
+    "subtitle": "Explore thousands of amazing destinations across India",
+    "title": "Discover Incredible Places"
+  },
+  "profile": {
+    "completeProfile": "Complete your profile",
+    "completeProfileDesc": "Add your details to connect with travel buddies",
+    "editProfile": "Edit Profile",
+    "labels": {
+      "bio": "Bio",
+      "bioPlaceholder": "Tell others about yourself, your travel style, and what you're looking for in travel buddies...",
+      "pictureDesc": "Upload a professional or travel-themed photo. Max size 5MB."
+    },
+    "levels": {
+      "enthusiast": "Travel Enthusiast",
+      "expert": "Travel Expert",
+      "new": "New Explorer",
+      "seasoned": "Seasoned Traveler"
+    },
+    "messages": {
+      "imageSizeError": "Image size must be less than 5MB",
+      "nameRequired": "Name is required",
+      "saving": "Saving...",
+      "updated": "Profile updated successfully!"
+    },
+    "sections": {
+      "interests": "Travel Interests",
+      "myTrips": "My Trips",
+      "picture": "Profile Picture",
+      "stats": "Travel Stats"
+    },
+    "setupProfile": "Set up your profile",
+    "signInRequired": "Please sign in to view your profile",
+    "stats": {
+      "budgetManaged": "Budget Managed",
+      "completed": "Completed Trips",
+      "travelLevel": "Travel Level",
+      "tripsCreated": "Trips Created",
+      "tripsJoined": "Trips Joined"
+    },
+    "title": "Your Profile"
+  },
+  "redirect": "Redirect",
+  "return": "Return",
+  "signInPage": {
+    "redirectNotice": "Redirect Notice",
+    "subtitle": "Subtitle",
+    "title": "Title"
+  },
+  "state": "State",
+  "trips": {
+    "adjustCriteria": "Adjust Criteria",
+    "beTheFirst": "Be The First",
+    "card": {
+      "by": "by {{name}}",
+      "joined": "{{count}} travelers"
+    },
+    "create": {
+      "back": "Back",
+      "budget": "Budget per person (₹)",
+      "budgetPlaceholder": "15000",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell others about your trip plans, what you're looking for in travel buddies, and any special requirements...",
+      "destination": "Destination",
+      "destinationPlaceholder": "e.g., Goa, Manali, Kerala",
+      "endDate": "End Date",
+      "image": "Trip Image (optional)",
+      "imageDragDrop": "or drag and drop",
+      "imageTypeDesc": "PNG, JPG, GIF up to 10MB",
+      "imageUpload": "Upload a file",
+      "interests": "Interests",
+      "interestsSubtitle": "Select interests that match your trip style",
+      "maxTravelers": "Max Travelers",
+      "maxTravelersOption": "{{count}} people",
+      "noUsersFound": "No users found",
+      "returnNotice": "You started creating a trip from another page.",
+      "searchFriends": "Search friends by name...",
+      "spotsFilled": "All spots filled — increase max travelers to invite more",
+      "startDate": "Start Date",
+      "submit": "Create Trip",
+      "submitting": "Creating Trip...",
+      "subtitle": "Share your travel plans and find amazing travel buddies",
+      "title": "Create Your Trip",
+      "travelingWith": "Traveling With"
+    },
+    "createFirst": "Create First",
+    "createTrip": "Create Trip",
+    "detail": {
+      "about": "About this trip",
+      "backToTrips": "Back to Trips",
+      "budget": "Budget",
+      "budgetPlanner": "Budget Planner",
+      "coTravelers": "Co-Travelers",
+      "dates": "Dates",
+      "groupChat": "Group Chat",
+      "groupFull": "Group is full!",
+      "interests": "Interests",
+      "invitedByOrganizer": "Invited by organizer",
+      "invitedFriends": "Invited Friends",
+      "loading": "Loading trip details...",
+      "openSlots": "{{count}} open slot for co-travelers",
+      "organizer": "Trip Organizer",
+      "relatedPlace": "Related Place",
+      "requestSent": "Request sent! Wait for approval.",
+      "requestToJoin": "Request to Join",
+      "requests": "Trip Requests",
+      "travelers": "Travelers",
+      "viewPlace": "View Place"
+    },
+    "filterInterests": "Filter by Interest",
+    "filters": "Filters",
+    "maxBudgetFilter": "Max Budget (₹)",
+    "messages": {
+      "alreadyInvited": "This person is already invited.",
+      "createError": "Failed to create trip. Please try again.",
+      "createSuccess": "Trip created successfully!",
+      "dateError": "End date must be after start date",
+      "fillRequired": "Please fill in all required fields",
+      "friendsRemoved": "Some invited friends were removed because the group size decreased.",
+      "interestError": "Please select at least one interest",
+      "requestError": "Failed to send request",
+      "requestSuccess": "Request sent successfully!",
+      "respondError": "Failed to respond to request",
+      "respondSuccess": "Request {{response}} successfully!",
+      "spotsFilledError": "All spots are filled! Increase max travelers to invite more friends."
+    },
+    "noTripsFound": "No trips found matching your criteria",
+    "resultsCount": "{{count}} trips found",
+    "searchPlaceholder": "Search by destination...",
+    "subtitle": "Discover, join, or create amazing travel experiences with like-minded people.",
+    "tabs": {
+      "all": "All Trips",
+      "myTrips": "My Trips"
+    },
+    "title": "Trips"
+  },
+  "verify": {
+    "backHome": "Back to Home",
+    "details": {
+      "destination": "Destination",
+      "status": "Status"
+    },
+    "error": "The verification link you followed is either invalid, has expired, or the trip is no longer active.",
+    "failedSubtitle": "Invalid or inactive trip verification",
+    "failedTitle": "Verification Failed",
+    "footer": "Secure Trip Verification System • Smart-BU",
+    "successSubtitle": "This is a verified co-traveller trip",
+    "title": "Verified Trip"
+  },
+  "weather": "Weather",
+  "welcome": "Welcome"
+}

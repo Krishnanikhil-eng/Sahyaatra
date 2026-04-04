@@ -6,6 +6,7 @@ import missingStatesData from '../data/missingStatesData.json';
 import { CompactWeatherWidget } from './WeatherWidget';
 import indiaStatesMeta from '../data/indiaStatesMeta.json';
 import { IndiaMapSvg } from './IndiaMapSvg';
+import { useTranslation } from "react-i18next";
 
 interface StateInfo {
   code: string;
@@ -19,6 +20,7 @@ interface StateInfo {
 }
 
 export function AdvancedIndiaMap() {
+  const { t } = useTranslation(['map', 'common']);
   const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState<StateInfo | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
@@ -83,10 +85,10 @@ export function AdvancedIndiaMap() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Explore Incredible India
+            {t('map:header.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-            Discover the rich culture, heritage, and natural beauty of all 28 states and 8 union territories of India
+            {t('map:header.subtitle')}
           </p>
         </div>
 
@@ -98,7 +100,7 @@ export function AdvancedIndiaMap() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search states, abbreviations, or capitals..."
+                placeholder={t('map:controls.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -115,7 +117,7 @@ export function AdvancedIndiaMap() {
               >
                 {regions.map(region => (
                   <option key={region} value={region}>
-                    {region === 'all' ? 'All Regions' : region}
+                    {t(`map:regions.${region}`)}
                   </option>
                 ))}
               </select>
@@ -149,13 +151,13 @@ export function AdvancedIndiaMap() {
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900">{selectedState.name}</h3>
-                      <p className="text-sm text-gray-500">{selectedState.capital} - {selectedState.region}</p>
+                      <p className="text-sm text-gray-500">{selectedState.capital} - {t(`map:regions.${selectedState.region}`)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {selectedState.type === 'state' ? (
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">State</span>
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">{t('map:info.labels.state')}</span>
                       ) : (
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">Union Territory</span>
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">{t('map:info.labels.ut')}</span>
                       )}
                       <MapPin className="w-6 h-6 text-blue-600" />
                     </div>
@@ -168,7 +170,7 @@ export function AdvancedIndiaMap() {
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-1">Available Places</h4>
+                          <h4 className="text-sm font-semibold text-gray-700 mb-1">{t('map:info.labels.availablePlaces')}</h4>
                           <div className="text-2xl font-bold text-blue-600">{getPlacesCount(selectedState.code)}</div>
                         </div>
                         <MapPin className="w-8 h-8 text-blue-500" />
@@ -177,7 +179,7 @@ export function AdvancedIndiaMap() {
 
                     {/* Weather Widget */}
                     <div>
-                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Current Weather</h4>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2">{t('map:info.labels.currentWeather')}</h4>
                       <CompactWeatherWidget location={selectedState.name} />
                     </div>
 
@@ -185,7 +187,7 @@ export function AdvancedIndiaMap() {
                     <div>
                       <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                         <Star className="w-4 h-4 text-yellow-500" />
-                        Top Highlights
+                        {t('map:info.labels.topHighlights')}
                       </h4>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedState.highlights.map((highlight, index) => (
@@ -200,7 +202,7 @@ export function AdvancedIndiaMap() {
                     <div>
                       <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-green-500" />
-                        Best Time to Visit
+                        {t('map:info.labels.bestTime')}
                       </h4>
                       <p className="text-sm text-gray-600">{selectedState.bestTime}</p>
                     </div>
@@ -212,13 +214,13 @@ export function AdvancedIndiaMap() {
                         className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        Explore {selectedState.name}
+                        {t('common:buttons.explore', { name: selectedState.name })}
                       </button>
                       <button
                         onClick={() => setSelectedState(null)}
                         className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
                       >
-                        Clear Selection
+                        {t('common:buttons.clearSelection')}
                       </button>
                     </div>
                   </div>
@@ -226,12 +228,12 @@ export function AdvancedIndiaMap() {
               ) : (
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-gray-900">Interactive India Map</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">{t('map:info.defaultTitle')}</h3>
                     <Info className="w-6 h-6 text-blue-600" />
                   </div>
 
                   <p className="text-gray-600 mb-6">
-                    Click on any state or union territory to explore its unique culture, history, and attractions.
+                    {t('map:info.defaultDesc')}
                   </p>
 
                   <div className="space-y-4">
@@ -240,11 +242,11 @@ export function AdvancedIndiaMap() {
                       <div className="grid grid-cols-2 gap-4 text-center">
                         <div>
                           <div className="text-2xl font-bold text-blue-600">28</div>
-                          <div className="text-sm text-blue-800">States</div>
+                          <div className="text-sm text-blue-800">{t('map:info.stats.states')}</div>
                         </div>
                         <div>
                           <div className="text-2xl font-bold text-indigo-600">8</div>
-                          <div className="text-sm text-indigo-800">Union Territories</div>
+                          <div className="text-sm text-indigo-800">{t('map:info.stats.uts')}</div>
                         </div>
                       </div>
                     </div>
@@ -252,17 +254,17 @@ export function AdvancedIndiaMap() {
                     {/* Quick Stats */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Total Regions:</span>
+                        <span className="text-gray-600">{t('map:info.stats.totalRegions')}</span>
                         <span className="font-medium">36</span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Filtered Results:</span>
+                        <span className="text-gray-600">{t('map:info.stats.filteredResults')}</span>
                         <span className="font-medium">{filteredStates.length}</span>
                       </div>
                     </div>
 
                     <div className="text-sm text-gray-500">
-                      <p><strong>Tip:</strong> Use the search and filter options to find specific states quickly.</p>
+                      <p><strong>{t('common:labels.tip') || 'Tip'}:</strong> {t('map:info.tip')}</p>
                     </div>
                   </div>
                 </div>
@@ -275,7 +277,7 @@ export function AdvancedIndiaMap() {
         {filteredStates.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-              {filteredStates.length} {filterRegion === 'all' ? 'States & Union Territories' : `${filterRegion} States`}
+              {filteredStates.length} {filterRegion === 'all' ? t('map:grid.title') : t('map:grid.regionStates', { region: t(`map:regions.${filterRegion}`) })}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredStates.map((state) => (
@@ -290,13 +292,13 @@ export function AdvancedIndiaMap() {
                       ? 'bg-green-100 text-green-800'
                       : 'bg-blue-100 text-blue-800'
                       }`}>
-                      {state.type === 'state' ? 'State' : 'UT'}
+                      {state.type === 'state' ? t('map:info.labels.state') : t('map:info.labels.ut')}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">{state.capital}</p>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-500">{state.region}</p>
-                    <p className="text-xs text-blue-600 font-medium">{getPlacesCount(state.code)} places</p>
+                    <p className="text-xs text-gray-500">{t(`map:regions.${state.region}`)}</p>
+                    <p className="text-xs text-blue-600 font-medium">{t('map:grid.placesCount', { count: getPlacesCount(state.code) })}</p>
                   </div>
                 </div>
               ))}

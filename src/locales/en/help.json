@@ -1,0 +1,86 @@
+{
+  "hero": {
+    "title": "Help Center",
+    "subtitle": "Everything you need to know about using Sahyaatra and staying safe."
+  },
+  "categories": {
+    "safety": {
+      "title": "Safety Guidelines",
+      "description": "Best practices for meeting co-travelers and staying safe on your journey."
+    },
+    "emergency": {
+      "title": "Emergency Contacts",
+      "description": "Quick access to national helplines, police, and medical services."
+    },
+    "report": {
+      "title": "Report an Issue",
+      "description": "Found a bug or need direct support? Send us a message."
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "noArticles": "No articles found in this category.",
+    "categories": {
+      "all": "All",
+      "trips": "Trips",
+      "ai": "AI Features",
+      "qr": "QR Verify",
+      "account": "Account"
+    }
+  },
+  "cta": {
+    "title": "Still need help?",
+    "description": "Our team is here to support you 24/7. Connect with us through any of these channels.",
+    "button": "Report an Issue"
+  },
+  "report": {
+    "successTitle": "Report Submitted Successfully",
+    "successMessage": "Thank you for letting us know. We look into issues promptly to keep the community safe.",
+    "error": "Failed to submit report. Please try again later.",
+    "form": {
+      "title": "Report an Issue",
+      "name": "Name",
+      "email": "Email",
+      "issueType": {
+        "label": "Issue Type",
+        "qr": "QR verification failure",
+        "ai": "AI itinerary issue",
+        "trip": "Trip management issue",
+        "user": "Suspicious user",
+        "other": "Other"
+      },
+      "description": "Description",
+      "placeholder": "Please describe the issue in detail...",
+      "submit": "Submit Report"
+    }
+  },
+  "safety": {
+    "guidelines": {
+      "verify": "Verify the trip host profile.",
+      "qr": "Use in-app QR verification before meeting.",
+      "share": "Share trip details with a trusted contact.",
+      "public": "Meet in public locations first.",
+      "save": "Keep emergency contacts saved.",
+      "personal": "Avoid sharing sensitive personal information.",
+      "passwords": "Do not share OTPs or passwords.",
+      "activity": "Report suspicious activity immediately.",
+      "chat": "Use only in-app chat for communication.",
+      "police": "Contact local authorities in unsafe situations.",
+      "numbers": "Refer to emergency numbers listed in the Help section."
+    },
+    "sections": {
+      "before": "Before Meeting Co-Travelers",
+      "during": "During the Trip",
+      "digital": "Digital Safety",
+      "emergency": "Emergency Protocol"
+    }
+  },
+  "emergency": {
+    "police": "Police",
+    "ambulance": "Ambulance",
+    "women": "Women Helpline",
+    "child": "Child Helpline",
+    "national": "National Emergency",
+    "international": "If traveling internationally, contact local emergency services."
+  }
+}

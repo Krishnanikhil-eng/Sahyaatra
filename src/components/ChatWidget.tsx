@@ -2,8 +2,10 @@ import { useState } from "react";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import { useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useTranslation } from "react-i18next";
 
 export function ChatWidget() {
+  const { t } = useTranslation(['chat']);
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Array<{
@@ -14,7 +16,7 @@ export function ChatWidget() {
   }>>([
     {
       id: "welcome",
-      text: "Hi! I'm your Sahyaatra AI assistant. I can help you with:\n\n• Planning trips and itineraries\n• Finding travel buddies\n• Budget advice\n• Destination recommendations\n• Local insights and tips\n\nWhat would you like to know?",
+      text: t('chat:welcome'),
       isUser: false,
       timestamp: new Date(),
     }
@@ -54,7 +56,7 @@ export function ChatWidget() {
     } catch (error) {
       const errorMessage = {
         id: (Date.now() + 1).toString(),
-        text: "I'm sorry, I'm having trouble responding right now. Please try again or use the platform's other features to plan your trip.",
+        text: t('chat:error'),
         isUser: false,
         timestamp: new Date(),
       };
@@ -90,7 +92,7 @@ export function ChatWidget() {
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
             <div className="flex items-center space-x-2">
               <Sparkles className="w-5 h-5" />
-              <span className="font-medium">Sahyaatra AI</span>
+              <span className="font-medium">{t('chat:title')}</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -146,7 +148,7 @@ export function ChatWidget() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me about travel plans, destinations, budgets..."
+                placeholder={t('chat:placeholder')}
                 className="flex-1 p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows={2}
                 disabled={isLoading}

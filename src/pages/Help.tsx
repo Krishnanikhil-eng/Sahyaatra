@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from "react-i18next";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { PageTransition } from '../components/PageTransition';
 import {
     Search,
@@ -18,8 +21,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
-import { useMutation } from 'convex/react';
-import { api } from '../../convex/_generated/api';
 
 type FAQType = {
     question: string;
@@ -66,6 +67,7 @@ const faqs: FAQType[] = [
 ];
 
 export function Help() {
+    const { t } = useTranslation(['help', 'common']);
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
     const [activeCategory, setActiveCategory] = useState<FAQType['category'] | 'All'>('All');
 
@@ -140,11 +142,11 @@ export function Help() {
     });
 
     const categories: { id: FAQType['category'] | 'All', label: string, icon: React.ReactNode }[] = [
-        { id: 'All', label: 'All', icon: <Search className="w-4 h-4" /> },
-        { id: 'Trips', label: 'Trips', icon: <MapPin className="w-4 h-4" /> },
-        { id: 'AI', label: 'AI Features', icon: <Sparkles className="w-4 h-4" /> },
-        { id: 'QR', label: 'QR Verify', icon: <QrCode className="w-4 h-4" /> },
-        { id: 'Account', label: 'Account', icon: <Users className="w-4 h-4" /> },
+        { id: 'All', label: t('help:faq.categories.all'), icon: <Search className="w-4 h-4" /> },
+        { id: 'Trips', label: t('help:faq.categories.trips'), icon: <MapPin className="w-4 h-4" /> },
+        { id: 'AI', label: t('help:faq.categories.ai'), icon: <Sparkles className="w-4 h-4" /> },
+        { id: 'QR', label: t('help:faq.categories.qr'), icon: <QrCode className="w-4 h-4" /> },
+        { id: 'Account', label: t('help:faq.categories.account'), icon: <Users className="w-4 h-4" /> },
     ];
 
     return (
@@ -153,10 +155,10 @@ export function Help() {
                 {/* Header section */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 mb-4">
-                        How can we help you?
+                        {t('help:hero.title')}
                     </h1>
                     <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                        Browse the categories below to find answers to your travel and app-related questions.
+                        {t('help:hero.subtitle')}
                     </p>
                 </div>
 
@@ -171,8 +173,8 @@ export function Help() {
                         <div className="bg-orange-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-orange-600">
                             <Shield className="w-6 h-6" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Safety Guidelines</h3>
-                        <p className="text-sm text-gray-600">Best practices for meeting co-travelers and staying safe on your journey.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('help:categories.safety.title')}</h3>
+                        <p className="text-sm text-gray-600">{t('help:categories.safety.description')}</p>
                     </div>
 
                     <div
@@ -184,8 +186,8 @@ export function Help() {
                         <div className="bg-rose-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-rose-600">
                             <Phone className="w-6 h-6" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Emergency Contacts</h3>
-                        <p className="text-sm text-gray-600">Quick access to national helplines, police, and medical services.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('help:categories.emergency.title')}</h3>
+                        <p className="text-sm text-gray-600">{t('help:categories.emergency.description')}</p>
                     </div>
 
                     <div
@@ -197,14 +199,14 @@ export function Help() {
                         <div className="bg-blue-100 w-12 h-12 rounded-xl flex items-center justify-center mb-4 text-blue-600">
                             <MessageSquare className="w-6 h-6" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Report an Issue</h3>
-                        <p className="text-sm text-gray-600">Found a bug or need direct support? Send us a message.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('help:categories.report.title')}</h3>
+                        <p className="text-sm text-gray-600">{t('help:categories.report.description')}</p>
                     </div>
                 </div>
 
                 {/* FAQs */}
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('help:faq.title')}</h2>
 
                     {/* Category Tabs */}
                     <div className="flex flex-wrap gap-2 mb-8">
@@ -262,7 +264,7 @@ export function Help() {
                         ) : (
                             <div className="text-center py-12 text-gray-500">
                                 <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                                <p>No articles found in this category.</p>
+                                <p>{t('help:faq.noArticles')}</p>
                             </div>
                         )}
                     </div>
@@ -273,15 +275,15 @@ export function Help() {
                     <div className="absolute top-0 right-0 -mt-16 -mr-16 text-white/5">
                         <Mail className="w-64 h-64" />
                     </div>
-                    <h2 className="text-2xl font-bold mb-4 relative z-10">Still need help?</h2>
+                    <h2 className="text-2xl font-bold mb-4 relative z-10">{t('help:cta.title')}</h2>
                     <p className="text-gray-300 mb-6 relative z-10">
-                        Can't find the answer you're looking for? Our support team is here to help with any travel emergencies or app issues.
+                        {t('help:cta.description')}
                     </p>
                     <button
                         onClick={() => setActiveModal('report')}
                         className="bg-white text-gray-900 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors relative z-10 hover:scale-105 transform"
                     >
-                        Contact Support
+                        {t('help:cta.button')}
                     </button>
                 </div>
             </div>
@@ -310,9 +312,9 @@ export function Help() {
                         >
                             <div className="sticky top-0 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-gray-100 flex justify-between items-center z-20">
                                 <h2 className="text-xl font-bold text-gray-900">
-                                    {activeModal === 'safety' && 'Safety Guidelines'}
-                                    {activeModal === 'emergency' && 'Emergency Contacts'}
-                                    {activeModal === 'report' && 'Report an Issue'}
+                                    {activeModal === 'safety' && t('help:categories.safety.title')}
+                                    {activeModal === 'emergency' && t('help:categories.emergency.title')}
+                                    {activeModal === 'report' && t('help:report.form.title')}
                                 </h2>
                                 <button
                                     onClick={closeModal}
@@ -330,44 +332,44 @@ export function Help() {
                                         <section>
                                             <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                                                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">1</div>
-                                                Before Meeting Co-Travelers
+                                                {t('help:safety.sections.before')}
                                             </h3>
                                             <ul className="list-disc pl-11 space-y-2">
-                                                <li>Verify the trip host profile.</li>
-                                                <li>Use in-app QR verification before meeting.</li>
-                                                <li>Share trip details with a trusted contact.</li>
+                                                <li>{t('help:safety.guidelines.verify')}</li>
+                                                <li>{t('help:safety.guidelines.qr')}</li>
+                                                <li>{t('help:safety.guidelines.share')}</li>
                                             </ul>
                                         </section>
                                         <section>
                                             <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                                                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">2</div>
-                                                During the Trip
+                                                {t('help:safety.sections.during')}
                                             </h3>
                                             <ul className="list-disc pl-11 space-y-2">
-                                                <li>Meet in public locations first.</li>
-                                                <li>Keep emergency contacts saved.</li>
-                                                <li>Avoid sharing sensitive personal information.</li>
+                                                <li>{t('help:safety.guidelines.public')}</li>
+                                                <li>{t('help:safety.guidelines.save')}</li>
+                                                <li>{t('help:safety.guidelines.personal')}</li>
                                             </ul>
                                         </section>
                                         <section>
                                             <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                                                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold mr-3">3</div>
-                                                Digital Safety
+                                                {t('help:safety.sections.digital')}
                                             </h3>
                                             <ul className="list-disc pl-11 space-y-2">
-                                                <li>Do not share OTPs or passwords.</li>
-                                                <li>Report suspicious activity immediately.</li>
-                                                <li>Use only in-app chat for communication.</li>
+                                                <li>{t('help:safety.guidelines.passwords')}</li>
+                                                <li>{t('help:safety.guidelines.activity')}</li>
+                                                <li>{t('help:safety.guidelines.chat')}</li>
                                             </ul>
                                         </section>
                                         <section>
                                             <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                                                 <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold mr-3">!</div>
-                                                Emergency Protocol
+                                                {t('help:safety.sections.emergency')}
                                             </h3>
                                             <ul className="list-disc pl-11 space-y-2">
-                                                <li>Contact local authorities in unsafe situations.</li>
-                                                <li>Refer to emergency numbers listed in the Help section.</li>
+                                                <li>{t('help:safety.guidelines.police')}</li>
+                                                <li>{t('help:safety.guidelines.numbers')}</li>
                                             </ul>
                                         </section>
                                     </div>
@@ -378,11 +380,11 @@ export function Help() {
                                     <div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                                             {[
-                                                { label: 'Police', number: '100', icon: Shield, color: 'blue' },
-                                                { label: 'Ambulance', number: '108', icon: Phone, color: 'rose' },
-                                                { label: 'Women Helpline', number: '181', icon: Users, color: 'purple' },
-                                                { label: 'Child Helpline', number: '1098', icon: Users, color: 'amber' },
-                                                { label: 'National Emergency', number: '112', icon: AlertTriangle, color: 'red' },
+                                                { label: t('help:emergency.police'), number: '100', icon: Shield, color: 'blue' },
+                                                { label: t('help:emergency.ambulance'), number: '108', icon: Phone, color: 'rose' },
+                                                { label: t('help:emergency.women'), number: '181', icon: Users, color: 'purple' },
+                                                { label: t('help:emergency.child'), number: '1098', icon: Users, color: 'amber' },
+                                                { label: t('help:emergency.national'), number: '112', icon: AlertTriangle, color: 'red' },
                                             ].map((contact, i) => (
                                                 <div key={i} className="flex items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
                                                     <div className={`w-12 h-12 rounded-full bg-${contact.color}-100 text-${contact.color}-600 flex items-center justify-center mr-4`}>
@@ -397,7 +399,7 @@ export function Help() {
                                         </div>
                                         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-xl flex items-start">
                                             <AlertTriangle className="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
-                                            <p className="text-sm font-medium">If traveling internationally, contact local emergency services.</p>
+                                            <p className="text-sm font-medium">{t('help:emergency.international')}</p>
                                         </div>
                                     </div>
                                 )}
@@ -412,19 +414,19 @@ export function Help() {
                                                 className="text-center py-12"
                                             >
                                                 <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Report Submitted Successfully</h3>
-                                                <p className="text-gray-600">Thank you for letting us know. We look into issues promptly to keep the community safe.</p>
+                                                <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('help:report.successTitle')}</h3>
+                                                <p className="text-gray-600">{t('help:report.successMessage')}</p>
                                             </motion.div>
                                         ) : (
                                             <form onSubmit={handleReportSubmit} className="space-y-5">
                                                 {reportStatus === 'error' && (
                                                     <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
-                                                        Failed to submit report. Please try again later.
+                                                        {t('help:report.error')}
                                                     </div>
                                                 )}
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                                     <div>
-                                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{t('help:report.form.name')}</label>
                                                         <input
                                                             type="text"
                                                             id="name"
@@ -436,7 +438,7 @@ export function Help() {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{t('help:report.form.email')}</label>
                                                         <input
                                                             type="email"
                                                             id="email"
@@ -450,7 +452,7 @@ export function Help() {
                                                 </div>
 
                                                 <div>
-                                                    <label htmlFor="issueType" className="block text-sm font-medium text-gray-700 mb-1">Issue Type</label>
+                                                    <label htmlFor="issueType" className="block text-sm font-medium text-gray-700 mb-1">{t('help:report.form.issueType.label')}</label>
                                                     <select
                                                         id="issueType"
                                                         value={reportForm.type}
@@ -458,16 +460,16 @@ export function Help() {
                                                         onChange={(e) => setReportForm({ ...reportForm, type: e.target.value })}
                                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-white disabled:opacity-50"
                                                     >
-                                                        <option value="QR verification failure">QR verification failure</option>
-                                                        <option value="AI itinerary issue">AI itinerary issue</option>
-                                                        <option value="Trip management issue">Trip management issue</option>
-                                                        <option value="Suspicious user">Suspicious user</option>
-                                                        <option value="Other">Other</option>
+                                                        <option value="QR verification failure">{t('help:report.form.issueType.qr')}</option>
+                                                        <option value="AI itinerary issue">{t('help:report.form.issueType.ai')}</option>
+                                                        <option value="Trip management issue">{t('help:report.form.issueType.trip')}</option>
+                                                        <option value="Suspicious user">{t('help:report.form.issueType.user')}</option>
+                                                        <option value="Other">{t('help:report.form.issueType.other')}</option>
                                                     </select>
                                                 </div>
 
                                                 <div>
-                                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t('help:report.form.description')}</label>
                                                     <textarea
                                                         id="description"
                                                         required
@@ -475,7 +477,7 @@ export function Help() {
                                                         disabled={reportStatus === 'submitting'}
                                                         value={reportForm.description}
                                                         onChange={(e) => setReportForm({ ...reportForm, description: e.target.value })}
-                                                        placeholder="Please describe the issue in detail..."
+                                                        placeholder={t('help:report.form.placeholder')}
                                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none disabled:opacity-50"
                                                     ></textarea>
                                                 </div>
@@ -487,7 +489,7 @@ export function Help() {
                                                         disabled={reportStatus === 'submitting'}
                                                         className="px-6 py-2.5 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
                                                     >
-                                                        Cancel
+                                                        {t('common:cancel')}
                                                     </button>
                                                     <button
                                                         type="submit"
@@ -500,10 +502,10 @@ export function Help() {
                                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                                 </svg>
-                                                                Submitting...
+                                                                {t('common:submitting')}
                                                             </>
                                                         ) : (
-                                                            'Submit Report'
+                                                            t('help:report.form.submit')
                                                         )}
                                                     </button>
                                                 </div>

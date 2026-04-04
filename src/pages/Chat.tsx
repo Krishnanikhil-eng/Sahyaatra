@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { Send, Users, Sparkles, Bot, QrCode, X } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
+import { useTranslation } from "react-i18next";
+
 export function Chat() {
+  const { t } = useTranslation(['chat', 'common']);
   const { tripId } = useParams<{ tripId: string }>();
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -42,7 +45,7 @@ export function Chat() {
       });
       setMessage("");
     } catch (error: any) {
-      toast.error(error.message || "Failed to send message");
+      toast.error(error.message || t('chat:messages.error'));
     }
   };
 
@@ -65,9 +68,9 @@ export function Chat() {
       });
 
       setAiMessage("");
-      toast.success("AI response added to chat!");
+      toast.success(t('chat:ai.success'));
     } catch (error: any) {
-      toast.error("Failed to get AI response");
+      toast.error(t('chat:ai.error'));
     } finally {
       setIsAiLoading(false);
     }
@@ -79,7 +82,7 @@ export function Chat() {
     // Check if PUBLIC_BASE_URL is missing as per instructions
     if (!publicBaseUrl) {
       console.error("QR Code Error: VITE_PUBLIC_BASE_URL is missing in environment variables. QR cannot be generated for mobile scanning.");
-      toast.error("Trip verification is temporarily unavailable. Please contact support.");
+      toast.error(t('chat:qr.errorBaseUrl'));
       return;
     }
 
@@ -89,10 +92,10 @@ export function Chat() {
         setVerificationToken(result.token);
         setShowQrModal(true);
       } else {
-        toast.error(result.message || "Cannot generate verification QR");
+        toast.error(result.message || t('chat:qr.errorGenerate'));
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to generate verification QR");
+      toast.error(error.message || t('chat:qr.errorGenerate'));
     }
   };
 
@@ -101,7 +104,7 @@ export function Chat() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading chat...</p>
+          <p className="text-gray-600">{t('chat:page.loading')}</p>
         </div>
       </div>
     );
@@ -115,11 +118,11 @@ export function Chat() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold text-gray-900">{trip.destination}</h1>
-              <p className="text-sm text-gray-600">Trip Chat</p>
+              <p className="text-sm text-gray-600">{t('chat:page.tripChat')}</p>
             </div>
             <div className="flex items-center space-x-2">
               <Users className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-600">{participants?.length || 0} members</span>
+              <span className="text-sm text-gray-600">{t('chat:page.membersCount', { count: participants?.length || 0 })}</span>
             </div>
           </div>
         </div>
@@ -128,7 +131,7 @@ export function Chat() {
       <div className="flex-1 flex max-w-4xl mx-auto w-full">
         {/* Participants Sidebar */}
         <div className="w-64 bg-white border-r p-4">
-          <h3 className="font-medium text-gray-900 mb-4">Participants</h3>
+          <h3 className="font-medium text-gray-900 mb-4">{t('chat:page.participants')}</h3>
           <div className="space-y-3">
             {participants?.map((participant) => (
               <div key={participant.userId} className="flex items-center space-x-3">
@@ -150,7 +153,7 @@ export function Chat() {
                 className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
               >
                 <QrCode className="w-4 h-4" />
-                <span className="text-sm font-medium">Trip Verification QR</span>
+                <span className="text-sm font-medium">{t('chat:qr.button')}</span>
               </button>
             </div>
           )}
@@ -193,14 +196,14 @@ export function Chat() {
           <div className="border-t bg-gradient-to-r from-purple-50 to-blue-50 p-4">
             <div className="flex items-center space-x-2 mb-3">
               <Bot className="w-5 h-5 text-purple-600" />
-              <span className="text-sm font-medium text-purple-800">AI Travel Assistant</span>
+              <span className="text-sm font-medium text-purple-800">{t('chat:ai.label')}</span>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); handleAskAI(); }} className="flex space-x-2">
               <input
                 type="text"
                 value={aiMessage}
                 onChange={(e) => setAiMessage(e.target.value)}
-                placeholder="Ask AI about your trip, places to visit, budget tips..."
+                placeholder={t('chat:ai.placeholder')}
                 className="flex-1 px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
               />
               <button
@@ -213,7 +216,7 @@ export function Chat() {
                 ) : (
                   <Sparkles className="w-4 h-4" />
                 )}
-                <span className="hidden sm:inline">Ask AI</span>
+                <span className="hidden sm:inline">{t('chat:ai.askButton')}</span>
               </button>
             </form>
           </div>
@@ -225,7 +228,7 @@ export function Chat() {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message..."
+                placeholder={t('chat:messages.placeholder')}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button
@@ -252,17 +255,12 @@ export function Chat() {
             </button>
 
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Trip Verification</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('chat:qr.modalTitle')}</h3>
               <p className="text-sm text-gray-600 mb-6 font-medium">
-                Ask a co-traveler to scan this QR to verify the trip.
+                {t('chat:qr.modalSubtitle')}
               </p>
 
               <div className="bg-white p-4 rounded-lg border-2 border-dashed border-gray-100 inline-block mb-6">
-                {/* 
-                  Using VITE_PUBLIC_BASE_URL (e.g. ngrok) to ensure the QR code 
-                  is scannable from mobile devices during development. 
-                  Localhost is not accessible from external phone cameras.
-                */}
                 <QRCodeSVG
                   value={`${import.meta.env.VITE_PUBLIC_BASE_URL}/trip/verify/${verificationToken}`}
                   size={200}
@@ -274,7 +272,7 @@ export function Chat() {
               <div className="bg-blue-50 p-3 rounded-lg flex items-start space-x-2 text-left">
                 <div className="w-2 h-2 mt-1.5 rounded-full bg-blue-500 flex-shrink-0" />
                 <p className="text-xs text-blue-700 italic">
-                  This QR contains a secure verification link for this trip only.
+                  {t('chat:qr.modalInfo')}
                 </p>
               </div>
             </div>

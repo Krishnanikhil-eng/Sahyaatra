@@ -40,4 +40,7 @@ window.addEventListener('message', async (message) => {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    allowedHosts: true, // Alternatively, you can use ["all"] if preferred
+  },
 }));

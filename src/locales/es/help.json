@@ -1,0 +1,86 @@
+{
+  "hero": {
+    "title": "Centro de Ayuda",
+    "subtitle": "Todo lo que necesitas saber sobre el uso de Sahyaatra y cómo mantenerte seguro."
+  },
+  "categories": {
+    "safety": {
+      "title": "Pautas de Seguridad",
+      "description": "Mejores prácticas para conocer a compañeros de viaje y mantenerse seguro en su viaje."
+    },
+    "emergency": {
+      "title": "Contactos de Emergencia",
+      "description": "Acceso rápido a líneas de ayuda nacionales, policía y servicios médicos."
+    },
+    "report": {
+      "title": "Informar de un Problema",
+      "description": "¿Has encontrado un error o necesitas soporte directo? Envíanos un mensaje."
+    }
+  },
+  "faq": {
+    "title": "Preguntas Frecuentes",
+    "noArticles": "No se encontraron artículos en esta categoría.",
+    "categories": {
+      "all": "Todos",
+      "trips": "Viajes",
+      "ai": "Funciones de IA",
+      "qr": "Verificación QR",
+      "account": "Cuenta"
+    }
+  },
+  "cta": {
+    "title": "¿Aún necesitas ayuda?",
+    "description": "Nuestro equipo está aquí para apoyarte las 24 horas, los 7 días de la semana. Conéctate con nosotros a través de cualquiera de estos canales.",
+    "button": "Informar de un Problema"
+  },
+  "report": {
+    "successTitle": "Informe enviado con éxito",
+    "successMessage": "Gracias por hacérnoslo saber. Revisamos los problemas con prontitud para mantener segura a la comunidad.",
+    "error": "Error al enviar el informe. Por favor, inténtalo de nuevo más tarde.",
+    "form": {
+      "title": "Informar de un problema",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "issueType": {
+        "label": "Tipo de problema",
+        "qr": "Fallo de verificación QR",
+        "ai": "Problema con el itinerario de IA",
+        "trip": "Problema de gestión del viaje",
+        "user": "Usuario sospechoso",
+        "other": "Otro"
+      },
+      "description": "Descripción",
+      "placeholder": "Por favor, describe el problema en detalle...",
+      "submit": "Enviar informe"
+    }
+  },
+  "safety": {
+    "guidelines": {
+      "verify": "Verifica el perfil del anfitrión del viaje.",
+      "qr": "Utiliza la verificación QR en la aplicación antes de reunirte.",
+      "share": "Comparte los detalles del viaje con un contacto de confianza.",
+      "public": "Reúnete primero en lugares públicos.",
+      "save": "Mantén guardados los contactos de emergencia.",
+      "personal": "Evita compartir información personal sensible.",
+      "passwords": "No compartas OTP ni contraseñas.",
+      "activity": "Informa de actividad sospechosa de inmediato.",
+      "chat": "Utiliza solo el chat de la aplicación para la comunicación.",
+      "police": "Contacta con las autoridades locales en situaciones inseguras.",
+      "numbers": "Consulta los números de emergencia que figuran en la sección de Ayuda."
+    },
+    "sections": {
+      "before": "Antes de conocer a compañeros de viaje",
+      "during": "Durante el viaje",
+      "digital": "Seguridad digital",
+      "emergency": "Protocolo de emergencia"
+    }
+  },
+  "emergency": {
+    "police": "Policía",
+    "ambulance": "Ambulancia",
+    "women": "Línea de ayuda para mujeres",
+    "child": "Línea de ayuda infantil",
+    "national": "Emergencia nacional",
+    "international": "Si viajas al extranjero, contacta con los servicios de emergencia locales."
+  }
+}

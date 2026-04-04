@@ -2,8 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { CheckCircle, XCircle, MapPin, Calendar, ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function VerifyTrip() {
+    const { t } = useTranslation(['verify', 'common']);
     const { token } = useParams<{ token: string }>();
     const trip = useQuery(api.trips.getTripByVerificationToken, { token: token || "" });
 
@@ -24,16 +26,16 @@ export function VerifyTrip() {
                             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
                                 <CheckCircle className="w-12 h-12 text-green-600" />
                             </div>
-                            <h1 className="text-2xl font-bold text-green-900">Verified Trip</h1>
-                            <p className="text-green-700 font-medium">✅ This is a verified co-traveller trip</p>
+                            <h1 className="text-2xl font-bold text-green-900">{t('verify:title')}</h1>
+                            <p className="text-green-700 font-medium">✅ {t('verify:successSubtitle')}</p>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center">
                             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
                                 <XCircle className="w-12 h-12 text-red-600" />
                             </div>
-                            <h1 className="text-2xl font-bold text-red-900">Verification Failed</h1>
-                            <p className="text-red-700 font-medium">❌ Invalid or inactive trip verification</p>
+                            <h1 className="text-2xl font-bold text-red-900">{t('verify:failedTitle')}</h1>
+                            <p className="text-red-700 font-medium">❌ {t('verify:failedSubtitle')}</p>
                         </div>
                     )}
                 </div>
@@ -46,7 +48,7 @@ export function VerifyTrip() {
                                     <MapPin className="w-5 h-5 text-gray-500" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Destination</p>
+                                    <p className="text-sm text-gray-500">{t('verify:details.destination')}</p>
                                     <p className="font-semibold text-gray-900">{trip.destination}</p>
                                 </div>
                             </div>
@@ -56,14 +58,14 @@ export function VerifyTrip() {
                                     <Calendar className="w-5 h-5 text-gray-500" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Status</p>
+                                    <p className="text-sm text-gray-500">{t('verify:details.status')}</p>
                                     <p className="font-semibold text-gray-900 capitalize">{trip.status}</p>
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <p className="text-gray-600 text-center mb-8">
-                            The verification link you followed is either invalid, has expired, or the trip is no longer active.
+                            {t('verify:error')}
                         </p>
                     )}
 
@@ -72,13 +74,13 @@ export function VerifyTrip() {
                         className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        <span>Back to Home</span>
+                        <span>{t('verify:backHome')}</span>
                     </Link>
                 </div>
 
                 <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 text-center">
                     <p className="text-xs text-gray-400">
-                        Secure Trip Verification System • Smart-BU
+                        {t('verify:footer')}
                     </p>
                 </div>
             </div>

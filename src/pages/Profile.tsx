@@ -4,7 +4,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { User, Edit, MapPin, Calendar, IndianRupee, Trophy } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 export function Profile() {
+  const { t } = useTranslation(['profile', 'trips', 'common']);
   const loggedInUser = useQuery(api.auth.loggedInUser);
   const profile = useQuery(api.profiles.getProfile, {});
   const stats = useQuery(api.profiles.getUserStats, {});
@@ -42,7 +45,7 @@ export function Profile() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image size must be less than 5MB");
+        toast.error(t('profile:messages.imageSizeError'));
         return;
       }
       setSelectedImage(file);
@@ -55,7 +58,7 @@ export function Profile() {
     e.preventDefault();
 
     if (!formData.name.trim()) {
-      toast.error("Name is required");
+      toast.error(t('profile:messages.nameRequired'));
       return;
     }
 
@@ -86,7 +89,7 @@ export function Profile() {
         bio: formData.bio || undefined,
         interests: formData.interests,
         avatar: formData.avatar || undefined,
-        storageId: storageId as any, // Cast to any to bypass strict ID type checks if needed, though usually string works if the backend expects Id<"_storage"> and the string matches
+        storageId: storageId as any,
       });
 
       setIsEditing(false);
@@ -94,9 +97,9 @@ export function Profile() {
       // Optional: revoke object URL to avoid memory leaks
       if (imagePreview) URL.revokeObjectURL(imagePreview);
       setImagePreview(null);
-      toast.success("Profile updated successfully!");
+      toast.success(t('profile:messages.updated'));
     } catch (error: any) {
-      toast.error(error.message || "Failed to update profile");
+      toast.error(error.message || t('common:messages.error') || "Failed to update profile");
     } finally {
       setIsUploading(false);
     }
@@ -106,7 +109,7 @@ export function Profile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Please sign in to view your profile</p>
+          <p className="text-gray-600">{t('profile:signInRequired')}</p>
         </div>
       </div>
     );
@@ -118,7 +121,7 @@ export function Profile() {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('profile:title')}</h1>
             {!isEditing && (
               <button
                 onClick={() => {
@@ -135,7 +138,7 @@ export function Profile() {
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Edit Profile
+                {t('profile:editProfile')}
               </button>
             )}
           </div>
@@ -151,7 +154,7 @@ export function Profile() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Name *
+                      {t('common:labels.name') || 'Name'} *
                     </label>
                     <input
                       type="text"
@@ -164,12 +167,12 @@ export function Profile() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Bio
+                      {t('profile:labels.bio')}
                     </label>
                     <textarea
                       value={formData.bio}
                       onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                      placeholder="Tell others about yourself, your travel style, and what you're looking for in travel buddies..."
+                      placeholder={t('profile:labels.bioPlaceholder')}
                       rows={4}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
@@ -177,7 +180,7 @@ export function Profile() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Travel Interests
+                      {t('profile:sections.interests')}
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {interests.map((interest) => (
@@ -190,7 +193,7 @@ export function Profile() {
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                         >
-                          {interest}
+                          {t(`trips:interests.${interest}`) || interest}
                         </button>
                       ))}
                     </div>
@@ -198,7 +201,7 @@ export function Profile() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Profile Picture
+                      {t('profile:sections.picture')}
                     </label>
                     <div className="flex items-center space-x-6">
                       <div className="w-20 h-20 bg-gray-100 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
@@ -227,7 +230,7 @@ export function Profile() {
                             hover:file:bg-blue-100 transition-colors cursor-pointer"
                         />
                         <p className="mt-2 text-xs text-gray-500">
-                          Upload a professional or travel-themed photo. Max size 5MB.
+                          {t('profile:labels.pictureDesc')}
                         </p>
                       </div>
                     </div>
@@ -245,10 +248,10 @@ export function Profile() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Saving...
+                          {t('profile:messages.saving')}
                         </>
                       ) : (
-                        "Save Changes"
+                        t('common:buttons.save')
                       )}
                     </button>
                     <button
@@ -261,7 +264,7 @@ export function Profile() {
                       }}
                       className="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-70"
                     >
-                      Cancel
+                      {t('common:buttons.cancel')}
                     </button>
                   </div>
                 </form>
@@ -280,7 +283,7 @@ export function Profile() {
                     </div>
                     <div className="flex-1 mt-2">
                       <h2 className="text-2xl font-bold text-gray-900">
-                        {profile?.name || "Set up your profile"}
+                        {profile?.name || t('profile:setupProfile')}
                       </h2>
                       <p className="text-gray-600">{loggedInUser.email}</p>
                       {profile?.bio && (
@@ -292,14 +295,14 @@ export function Profile() {
                   {/* Interests */}
                   {profile?.interests && profile.interests.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Travel Interests</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('profile:sections.interests')}</h3>
                       <div className="flex flex-wrap gap-2">
                         {profile.interests.map((interest, index) => (
                           <span
                             key={index}
                             className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full"
                           >
-                            {interest}
+                            {t(`trips:interests.${interest}`) || interest}
                           </span>
                         ))}
                       </div>
@@ -309,8 +312,8 @@ export function Profile() {
                   {!profile && (
                     <div className="text-center py-8">
                       <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Complete your profile</h3>
-                      <p className="text-gray-600 mb-4">Add your details to connect with travel buddies</p>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">{t('profile:completeProfile')}</h3>
+                      <p className="text-gray-600 mb-4">{t('profile:completeProfileDesc')}</p>
                     </div>
                   )}
                 </div>
@@ -319,7 +322,7 @@ export function Profile() {
 
             {/* My Trips */}
             <div className="bg-white rounded-xl shadow-sm p-6 mt-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-6">My Trips</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-6">{t('profile:sections.myTrips')}</h3>
               {userTrips && userTrips.length > 0 ? (
                 <div className="space-y-4">
                   {userTrips.map((trip) => (
@@ -338,7 +341,7 @@ export function Profile() {
                             </div>
                             <div className="flex items-center">
                               <MapPin className="w-4 h-4 mr-1" />
-                              <span>{trip.currentTravelers}/{trip.maxTravelers} travelers</span>
+                              <span>{t('trips:card.joined', { count: trip.currentTravelers })}/{trip.maxTravelers}</span>
                             </div>
                           </div>
                         </div>
@@ -355,7 +358,7 @@ export function Profile() {
               ) : (
                 <div className="text-center py-8">
                   <MapPin className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-600">No trips created yet</p>
+                  <p className="text-gray-600">{t('trips:noTripsFound')}</p>
                 </div>
               )}
             </div>
@@ -365,22 +368,22 @@ export function Profile() {
           <div className="space-y-6">
             {stats && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Travel Stats</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile:sections.stats')}</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Trips Created</span>
+                    <span className="text-gray-600">{t('profile:stats.tripsCreated')}</span>
                     <span className="font-semibold text-gray-900">{stats.tripsCreated}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Trips Joined</span>
+                    <span className="text-gray-600">{t('profile:stats.tripsJoined')}</span>
                     <span className="font-semibold text-gray-900">{stats.tripsJoined}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Completed Trips</span>
+                    <span className="text-gray-600">{t('profile:stats.completed')}</span>
                     <span className="font-semibold text-gray-900">{stats.completedTrips}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Budget Managed</span>
+                    <span className="text-gray-600">{t('profile:stats.budgetManaged')}</span>
                     <span className="font-semibold text-gray-900">₹{stats.totalBudgetManaged.toLocaleString()}</span>
                   </div>
                 </div>
@@ -390,13 +393,13 @@ export function Profile() {
             <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-xl p-6">
               <div className="flex items-center mb-3">
                 <Trophy className="w-6 h-6 text-yellow-600 mr-2" />
-                <h3 className="text-lg font-semibold text-gray-900">Travel Level</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('profile:stats.travelLevel')}</h3>
               </div>
               <p className="text-gray-600 text-sm">
-                {stats?.tripsCreated === 0 && stats?.tripsJoined === 0 ? "New Explorer" :
-                  stats && stats.tripsCreated + stats.tripsJoined < 5 ? "Travel Enthusiast" :
-                    stats && stats.tripsCreated + stats.tripsJoined < 10 ? "Seasoned Traveler" :
-                      "Travel Expert"}
+                {stats?.tripsCreated === 0 && stats?.tripsJoined === 0 ? t('profile:levels.new') :
+                  stats && stats.tripsCreated + stats.tripsJoined < 5 ? t('profile:levels.enthusiast') :
+                    stats && stats.tripsCreated + stats.tripsJoined < 10 ? t('profile:levels.seasoned') :
+                      t('profile:levels.expert')}
               </p>
               <div className="mt-3">
                 <div className="w-full bg-gray-200 rounded-full h-2">

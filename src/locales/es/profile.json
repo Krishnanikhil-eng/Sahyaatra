@@ -1,0 +1,43 @@
+{
+  "title": "Tu Perfil",
+  "editProfile": "Editar Perfil",
+  "signInRequired": "Inicia sesión para ver tu perfil",
+  "setupProfile": "Configura tu perfil",
+  "completeProfile": "Completa tu perfil",
+  "completeProfileDesc": "Añade tus datos para conectar con compañeros de viaje",
+  "sections": {
+    "personalInfo": "Información Personal",
+    "myTrips": "Mis Viajes",
+    "settings": "Configuración",
+    "preferences": "Preferencias de Viaje",
+    "interests": "Intereses de Viaje",
+    "picture": "Foto de Perfil",
+    "stats": "Estadísticas de Viaje"
+  },
+  "labels": {
+    "name": "Nombre completo",
+    "bio": "Biografía",
+    "bioPlaceholder": "Cuéntale a otros sobre ti, tu estilo de viaje y lo que buscas en compañeros de viaje...",
+    "pictureDesc": "Sube una foto profesional o temática de viajes. Tamaño máximo 5MB."
+  },
+  "stats": {
+    "tripsCreated": "Viajes Creados",
+    "tripsJoined": "Viajes Unidos",
+    "completed": "Viajes Completados",
+    "budgetManaged": "Presupuesto Gestionado",
+    "placesVisited": "Lugares Visitados",
+    "travelLevel": "Nivel de Viajero"
+  },
+  "levels": {
+    "new": "Nuevo Explorador",
+    "enthusiast": "Entusiasta del Viaje",
+    "seasoned": "Viajero Experimentado",
+    "expert": "Experto en Viajes"
+  },
+  "messages": {
+    "updated": "¡Perfil actualizado con éxito!",
+    "saving": "Guardando...",
+    "nameRequired": "El nombre es obligatorio",
+    "imageSizeError": "El tamaño de la imagen debe ser inferior a 5MB"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "buttons": {
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "explore": "Explore {{name}}",
+    "clearSelection": "Clear Selection",
+    "interactiveMap": "Interactive Map",
+    "website": "Website",
+    "clearFilters": "Clear Filters"
+  },
+  "user": {
+    "welcome": "Welcome back, {{name}}!",
+    "friend": "friend"
+  },
+  "labels": {
+    "state": "State",
+    "ut": "UT",
+    "in": "in",
+    "yearRound": "Year Round",
+    "free": "Free",
+    "checkDetails": "Check details",
+    "tip": "Tip"
+  }
+}

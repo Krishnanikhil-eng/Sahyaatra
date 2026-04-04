@@ -1,0 +1,40 @@
+{
+  "title": "Planificador de Presupuesto",
+  "backToTrip": "Volver al Viaje",
+  "createTitle": "Crea tu Presupuesto",
+  "noBudget": "Aún no se ha establecido el presupuesto",
+  "noBudgetDesc": "El organizador del viaje aún no ha iniciado el presupuesto para este viaje.",
+  "overview": {
+    "total": "Presupuesto Total",
+    "spent": "Total Gastado",
+    "remaining": "Restante"
+  },
+  "sections": {
+    "breakdown": "Desglose por Categoría",
+    "recentExpenses": "Gastos Recientes"
+  },
+  "categories": {
+    "travel": "Viajes",
+    "food": "Comida",
+    "stay": "Alojamiento",
+    "activities": "Actividades",
+    "misc": "Varios"
+  },
+  "addExpense": {
+    "title": "Añadir Gasto",
+    "category": "Categoría",
+    "amount": "Cantidad",
+    "description": "Descripción",
+    "descriptionPlaceholder": "ej., Almuerzo en restaurante",
+    "date": "Fecha",
+    "submit": "Añadir Gasto"
+  },
+  "messages": {
+    "created": "¡Presupuesto creado con éxito!",
+    "expenseAdded": "¡Gasto añadido con éxito!",
+    "createError": "Error al crear el presupuesto",
+    "addError": "Error al añadir el gasto",
+    "loading": "Cargando presupuesto...",
+    "noExpenses": "Aún no se han registrado gastos"
+  }
+}

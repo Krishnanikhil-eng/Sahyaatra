@@ -1,0 +1,13 @@
+{
+  "title": "Verified Trip",
+  "successSubtitle": "This is a verified co-traveller trip",
+  "failedTitle": "Verification Failed",
+  "failedSubtitle": "Invalid or inactive trip verification",
+  "details": {
+    "destination": "Destination",
+    "status": "Status"
+  },
+  "error": "The verification link you followed is either invalid, has expired, or the trip is no longer active.",
+  "backHome": "Back to Home",
+  "footer": "Secure Trip Verification System • Smart-BU"
+}

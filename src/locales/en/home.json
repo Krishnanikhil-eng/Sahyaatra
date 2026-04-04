@@ -1,0 +1,54 @@
+{
+  "hero": {
+    "badge": "Discover India's Hidden Gems",
+    "title": "Explore",
+    "titleAccent": "Incredible India",
+    "subtitle": "Discover 9,000+ amazing tourist destinations across India with AI-powered recommendations, stunning photography, and comprehensive travel information."
+  },
+  "buttons": {
+    "map": "Interactive Map",
+    "browse": "Browse Places",
+    "plan": "Plan Trip"
+  },
+  "stats": {
+    "destinations": "9,000+",
+    "destinationsLabel": "Tourist Destinations",
+    "states": "36+",
+    "statesLabel": "States & Union Territories",
+    "ai": "AI-Powered",
+    "aiLabel": "Travel Recommendations"
+  },
+  "features": {
+    "title": "Everything You Need for Perfect Travel",
+    "subtitle": "From discovering hidden gems to planning your itinerary, we've got you covered with cutting-edge technology.",
+    "map": {
+      "title": "Interactive Map",
+      "desc": "Explore India with our beautiful interactive SVG map. Click on any state to discover its tourist destinations."
+    },
+    "planning": {
+      "title": "Smart Planning",
+      "desc": "Create and manage your travel itineraries with AI-powered suggestions and real-time updates."
+    },
+    "ai": {
+      "title": "AI Assistant",
+      "desc": "Get personalized travel advice and recommendations from our advanced AI travel assistant."
+    },
+    "budget": {
+      "title": "Budget Tracker",
+      "desc": "Track your expenses and plan your travel budget with our intelligent expense calculator."
+    }
+  },
+  "trips": {
+    "recentTitle": "Recent Trips",
+    "recentSubtitle": "Join exciting trips planned by fellow travelers",
+    "viewAll": "View all trips",
+    "none": "No trips yet",
+    "noneDesc": "Be the first to plan an amazing trip and connect with fellow travelers!",
+    "createFirst": "Create First Trip"
+  },
+  "cta": {
+    "title": "Ready to Explore India?",
+    "desc": "Join thousands of travelers who have discovered amazing places with Sahyaatra. Start your journey today!",
+    "button": "Start with Interactive Map"
+  }
+}

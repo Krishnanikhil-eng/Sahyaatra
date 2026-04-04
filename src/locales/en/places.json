@@ -1,0 +1,22 @@
+{
+  "title": "Discover Incredible Places",
+  "subtitle": "Explore thousands of amazing destinations across India",
+  "searchPlaceholder": "Search destinations, states, or categories...",
+  "filters": {
+    "all": "All Places",
+    "trending": "Trending",
+    "nature": "Nature",
+    "heritage": "Heritage",
+    "spiritual": "Spiritual",
+    "adventure": "Adventure"
+  },
+  "noResults": "No places found matching your criteria",
+  "loadMore": "Load More",
+  "details": {
+    "about": "About this place",
+    "highlights": "Highlights",
+    "bestTime": "Best Time to Visit",
+    "gettingThere": "How to Get There",
+    "explore": "Explore Nearby"
+  }
+}

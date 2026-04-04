@@ -12,7 +12,7 @@ export const getTripMessages = query({
     const trip = await ctx.db.get(args.tripId);
     if (!trip) return [];
 
-    // Check if user is trip author or accepted member
+    // Allow access if user is author, accepted member, or invited friend
     const isAuthor = trip.authorId === userId;
     const acceptedRequest = await ctx.db
       .query("tripRequests")
@@ -21,8 +21,9 @@ export const getTripMessages = query({
       )
       .filter((q) => q.eq(q.field("status"), "accepted"))
       .unique();
+    const isInvited = trip.invitedFriends?.includes(userId);
 
-    if (!isAuthor && !acceptedRequest) {
+    if (!isAuthor && !acceptedRequest && !isInvited) {
       return [];
     }
 
@@ -87,8 +88,9 @@ export const sendMessage = mutation({
       )
       .filter((q) => q.eq(q.field("status"), "accepted"))
       .unique();
+    const isInvited = trip.invitedFriends?.includes(userId);
 
-    if (!isAuthor && !acceptedRequest) {
+    if (!isAuthor && !acceptedRequest && !isInvited) {
       throw new Error("Not authorized to send messages in this trip");
     }
 
@@ -145,6 +147,27 @@ export const getTripParticipants = query({
       });
     }
 
+    // Get invited friends
+    if (trip.invitedFriends && trip.invitedFriends.length > 0) {
+      for (const friendId of trip.invitedFriends) {
+        // Skip if already added as author or member
+        if (participants.some(p => p.userId === friendId)) continue;
+ 
+        const user = await ctx.db.get(friendId);
+        const profile = await ctx.db
+          .query("profiles")
+          .withIndex("by_user", (q) => q.eq("userId", friendId))
+          .unique();
+ 
+        participants.push({
+          userId: friendId,
+          name: profile?.name || user?.name || "Unknown",
+          avatar: profile?.avatar,
+          role: "member",
+        });
+      }
+    }
+ 
     return participants;
   },
 });

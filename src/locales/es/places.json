@@ -1,0 +1,22 @@
+{
+  "title": "Descubre Lugares Increíbles",
+  "subtitle": "Explora miles de destinos asombrosos en toda la India",
+  "searchPlaceholder": "Buscar destinos, estados o categorías...",
+  "filters": {
+    "all": "Todos los lugares",
+    "trending": "Tendencias",
+    "nature": "Naturaleza",
+    "heritage": "Patrimonio",
+    "spiritual": "Espiritual",
+    "adventure": "Aventura"
+  },
+  "noResults": "No se encontraron lugares que coincidan con tus criterios",
+  "loadMore": "Cargar más",
+  "details": {
+    "about": "Acerca de este lugar",
+    "highlights": "Lo más destacado",
+    "bestTime": "Mejor época para visitar",
+    "gettingThere": "Cómo llegar",
+    "explore": "Explorar alrededores"
+  }
+}

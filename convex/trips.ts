@@ -272,8 +272,9 @@ export const getTripVerificationToken = mutation({
       )
       .filter((q) => q.eq(q.field("status"), "accepted"))
       .unique();
+    const isInvited = trip.invitedFriends?.includes(userId as any);
 
-    if (!isAuthor && !acceptedRequest) {
+    if (!isAuthor && !acceptedRequest && !isInvited) {
       throw new Error("Not authorized to view verification QR");
     }
 
