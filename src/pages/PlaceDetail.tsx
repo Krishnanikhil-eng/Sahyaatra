@@ -96,8 +96,13 @@ export function PlaceDetail() {
 
   const loadPlaceImages = async (place: Place) => {
     try {
-      const locationQuery = `${place.place_name} ${place.state} india tourist attraction landmark monument`;
-      const images: UnsplashImage[] = await ImageService.getPlaceImages(locationQuery, 4);
+      const images: UnsplashImage[] = await ImageService.getPlaceImages(
+        place.place_name,
+        place.state,
+        "India",
+        place.category,
+        4
+      );
       setImages(images.map(img => img.urls.regular));
     } catch (error) {
       console.error('Error loading images:', error);

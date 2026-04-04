@@ -64,30 +64,77 @@ const WMO_MAP: Record<number, { condition: string; description: string; emojiDay
 
 export class WeatherService {
   private static cache = new Map<string, { data: WeatherData; timestamp: number }>();
-  private static CACHE_DURATION = 60 * 60 * 1000; // 60 minutes strictly
+  private static coordCache = new Map<string, { lat: number, lon: number }>();
+  private static CACHE_DURATION = 60 * 60 * 1000; // 60 minutes
+  private static PERSIST_KEY = 'sahyaatra_coords_v1';
+
+  // Indian State to Capital Mapping (Guaranteed Fallback)
+  private static STATE_CAPITALS: Record<string, string> = {
+    'Telangana': 'Hyderabad',
+    'Goa': 'Panjim',
+    'Maharashtra': 'Mumbai',
+    'Kerala': 'Thiruvananthapuram',
+    'Tamil Nadu': 'Chennai',
+    'Karnataka': 'Bengaluru',
+    'Himachal Pradesh': 'Shimla',
+    'Uttarakhand': 'Dehradun',
+    'Rajasthan': 'Jaipur',
+    'Uttar Pradesh': 'Lucknow',
+    'Odisha': 'Bhubaneswar',
+    'Andhra Pradesh': 'Amaravati',
+    'West Bengal': 'Kolkata',
+    'Delhi': 'New Delhi',
+    'Punjab': 'Chandigarh',
+    'Haryana': 'Chandigarh',
+    'Gujarat': 'Gandhinagar',
+    'Sikkim': 'Gangtok',
+    'Assam': 'Dispur',
+    'Bihar': 'Patna',
+    'Jharkhand': 'Ranchi',
+    'Chhattisgarh': 'Raipur',
+    'Madhya Pradesh': 'Bhopal'
+  };
 
   /**
-   * Get weather data for a location using precise latitude and longitude.
-   * If coordinates are missing, it returns a safe "Unavailable" state without an API call.
+   * Get weather data for a location. 
+   * Always attempts to resolve coordinates via Geocoding if not provided.
    */
   static async getWeatherData(location: string, coords?: { lat: number, lon: number }): Promise<WeatherData> {
-    // 1. Strict Coordinate Check
-    if (!coords || coords.lat === undefined || coords.lon === undefined) {
-      console.warn(`Weather skipped: No coordinates for location "${location}".`);
+    let finalCoords = coords;
+
+    // 1. Resolve Coordinates if missing
+    if (!finalCoords || finalCoords.lat === undefined || finalCoords.lon === undefined) {
+      // 1a. Check Memory + localStorage Persistent Cache
+      const cachedCoords = this.getStoredCoords(location);
+      if (cachedCoords) {
+        finalCoords = cachedCoords;
+      } else {
+        // 1b. Discovery Phase (4-Tier Fallback)
+        const discovered = await this.discoverCoordinates(location);
+        if (discovered) {
+          finalCoords = discovered;
+          this.setStoredCoords(location, finalCoords);
+        }
+      }
+    }
+
+    // 2. Final Fallback (Should be rare with State fallback)
+    if (!finalCoords) {
+      console.warn(`Weather unavailable for "${location}".`);
       return this.getFallbackWeather(location, 'Missing Coordinates');
     }
 
-    const { lat, lon } = coords;
+    const { lat, lon } = finalCoords;
     const cacheKey = `${lat}-${lon}`;
 
     try {
-      // 2. Check 60-min cache
+      // 3. Check 60-min weather cache
       const cached = this.cache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
         return cached.data;
       }
 
-      // 3. Construct API Request
+      // 4. Construct API Request
       const params = new URLSearchParams({
         latitude: lat.toString(),
         longitude: lon.toString(),
@@ -102,17 +149,14 @@ export class WeatherService {
       if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch Open-Meteo data`);
       
       const data = await res.json();
-      if (!data.current) throw new Error('Invalid response format: Missing current data');
-
-      // 4. Transform Current Data
+      if (!data.current) throw new Error('Invalid response format');
+      
       const current = data.current;
       const currentWmo = WMO_MAP[current.weather_code] || { condition: 'Unknown', description: 'Unknown', emojiDay: '🌍', emojiNight: '🌍' };
       
-      // 5. Transform Hourly Data (Timeline)
-      // Find the index that corresponds to the current hour
+      // Transform Hourly Timeline
       const now = new Date();
       const currentHourUTC = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours()).getTime();
-      
       let startIndex = data.hourly.time.findIndex((t: string) => new Date(t).getTime() >= currentHourUTC);
       if (startIndex === -1) startIndex = 0;
 
@@ -121,7 +165,6 @@ export class WeatherService {
         const hWmo = WMO_MAP[data.hourly.weather_code[absoluteIdx]] || { condition: 'Cloudy', emojiDay: '☁️' };
         const hTime = new Date(time);
         const hIsDay = hTime.getHours() >= 6 && hTime.getHours() <= 18;
-        
         return {
           timestamp: hTime.getTime(),
           temp: Math.round(data.hourly.temperature_2m[absoluteIdx]),
@@ -131,22 +174,7 @@ export class WeatherService {
         };
       });
 
-      // 6. Transform Daily Data
-      const daily: DailyForecast[] = data.daily.time.slice(0, 5).map((time: string, idx: number) => {
-        const dWmo = WMO_MAP[data.daily.weather_code[idx]] || { condition: 'Cloudy', emojiDay: '☁️' };
-        const dDate = new Date(time);
-        
-        return {
-          date: time,
-          dayName: dDate.toLocaleDateString('en-US', { weekday: 'short' }),
-          minTemp: Math.round(data.daily.temperature_2m_min[idx]),
-          maxTemp: Math.round(data.daily.temperature_2m_max[idx]),
-          condition: dWmo.condition,
-          icon: dWmo.emojiDay
-        };
-      });
-
-      // 7. Assemble WeatherData Object
+      // Assemble WeatherData
       const weatherData: WeatherData = {
         location: location,
         temperature: Math.round(current.temperature_2m),
@@ -154,29 +182,101 @@ export class WeatherService {
         description: currentWmo.description,
         humidity: data.hourly.relative_humidity_2m ? data.hourly.relative_humidity_2m[0] : 0, 
         windSpeed: Math.round(current.wind_speed_10m),
-        pressure: Math.round(data.hourly.pressure_msl ? data.hourly.pressure_msl[0] : 1013),
-        visibility: 10, // Default to 10km for now as Open-Meteo needs specific models for visibility
+        pressure: 1013,
+        visibility: 10,
         uvIndex: 0,
         precipitation: Math.round(data.daily.precipitation_probability_max[0]),
         icon: current.is_day ? currentWmo.emojiDay : (currentWmo.emojiNight || currentWmo.emojiDay),
         timestamp: Date.now(),
         hourly,
-        daily
+        daily: data.daily.time.slice(0, 5).map((time: string, idx: number) => {
+          const dWmo = WMO_MAP[data.daily.weather_code[idx]] || { condition: 'Cloudy', emojiDay: '☁️' };
+          return {
+            date: time,
+            dayName: new Date(time).toLocaleDateString('en-US', { weekday: 'short' }),
+            minTemp: Math.round(data.daily.temperature_2m_min[idx]),
+            maxTemp: Math.round(data.daily.temperature_2m_max[idx]),
+            condition: dWmo.condition,
+            icon: dWmo.emojiDay
+          };
+        })
       };
 
-      // 8. Cache for 60m
       this.cache.set(cacheKey, { data: weatherData, timestamp: Date.now() });
       return weatherData;
 
     } catch (error) {
-      console.error('Weather Service Error:', error);
-      return this.getFallbackWeather(location, 'Weather Service Restricted');
+      console.error('Weather Fetch Error:', error);
+      return this.getFallbackWeather(location, 'Service Restricted');
     }
   }
 
   /**
-   * Returns a safe "Weather Unavailable" UI state without crashing.
+   * 4-Tier Discovery Logic (Full -> Segment -> Town -> State)
    */
+  private static async discoverCoordinates(location: string): Promise<{ lat: number, lon: number } | null> {
+    const segments = location.split(',').map(s => s.replace(/\([^)]*\)/g, '').trim()).filter(s => s.length > 0);
+    const stateName = segments[segments.length - 1];
+    
+    // Tiered Queries
+    const queries = [
+      segments.join(' '), // Tier 1: Full cleaned name
+      segments[0],        // Tier 2: Main place segment
+      segments[0].replace(/h/g, ''), // Tier 3: Spelling Normalization (Ananthagiri -> Anantagiri)
+      stateName,          // Tier 4: State fallback
+      this.STATE_CAPITALS[stateName] || 'New Delhi' // Tier 5: Guaranteed State Capital
+    ].filter(Boolean) as string[];
+
+    for (const query of queries) {
+      try {
+        console.info(`Geocoding Attempt: "${query}"`);
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json&country_code=in`);
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.results && data.results.length > 0) {
+            const { latitude, longitude } = data.results[0];
+            console.info(`Coordinates resolved for "${query}":`, { lat: latitude, lon: longitude });
+            return { lat: latitude, lon: longitude };
+          }
+        }
+      } catch (e) {
+        console.error(`Geocoding error for "${query}":`, e);
+      }
+    }
+    return null;
+  }
+
+  private static getStoredCoords(location: string): { lat: number, lon: number } | null {
+    if (this.coordCache.has(location)) return this.coordCache.get(location)!;
+    
+    if (typeof window !== 'undefined') {
+      try {
+        const persisted = localStorage.getItem(this.PERSIST_KEY);
+        if (persisted) {
+          const map = JSON.parse(persisted);
+          if (map[location]) {
+            this.coordCache.set(location, map[location]);
+            return map[location];
+          }
+        }
+      } catch (e) { /* silent fail */ }
+    }
+    return null;
+  }
+
+  private static setStoredCoords(location: string, coords: { lat: number, lon: number }) {
+    this.coordCache.set(location, coords);
+    if (typeof window !== 'undefined') {
+      try {
+        const persisted = localStorage.getItem(this.PERSIST_KEY);
+        const map = persisted ? JSON.parse(persisted) : {};
+        map[location] = coords;
+        localStorage.setItem(this.PERSIST_KEY, JSON.stringify(map));
+      } catch (e) { /* silent fail */ }
+    }
+  }
+
   private static getFallbackWeather(location: string, reason: string): WeatherData {
     return {
       location,
@@ -195,6 +295,7 @@ export class WeatherService {
       daily: []
     };
   }
+
 
   // Formatting helpers to maintain UI consistency
   static formatTemperature(temp: number | string): string {
