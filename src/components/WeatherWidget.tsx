@@ -4,11 +4,13 @@ import { WeatherService, WeatherData, ForecastItem, DailyForecast } from '../ser
 
 interface WeatherWidgetProps {
   location: string;
+  lat?: number;
+  lon?: number;
   className?: string;
   showDetails?: boolean;
 }
 
-export function WeatherWidget({ location, className = '', showDetails = true }: WeatherWidgetProps) {
+export function WeatherWidget({ location, lat, lon, className = '', showDetails = true }: WeatherWidgetProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,13 +19,14 @@ export function WeatherWidget({ location, className = '', showDetails = true }: 
 
   useEffect(() => {
     loadWeatherData();
-  }, [location]);
+  }, [location, lat, lon]);
 
   const loadWeatherData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const weatherData = await WeatherService.getWeatherData(location);
+      const coords = (lat !== undefined && lon !== undefined) ? { lat, lon } : undefined;
+      const weatherData = await WeatherService.getWeatherData(location, coords);
       setWeather(weatherData);
     } catch (err) {
       setError('Failed to load weather data');
@@ -54,7 +57,7 @@ export function WeatherWidget({ location, className = '', showDetails = true }: 
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
           <h4 className="text-xl font-bold text-gray-800 mb-2">Weather data unavailable</h4>
-          <p className="text-gray-600 mb-6 max-w-xs mx-auto">We couldn't fetch weather for "{location}". Please check the name and try again.</p>
+          <p className="text-gray-600 mb-6 max-w-xs mx-auto">We couldn't fetch weather for "{location}". {error || 'Please check your connection.'}</p>
           <button
             onClick={handleRefresh}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium transition-all flex items-center space-x-2 mx-auto"
@@ -99,11 +102,14 @@ export function WeatherWidget({ location, className = '', showDetails = true }: 
 
       {isDataUnavailable ? (
         <div className="p-12 text-center flex flex-col items-center">
-          <AlertCircle className="w-16 h-16 text-orange-400 mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">No detailed data for this area</h3>
-          <p className="text-gray-500 mb-8 max-w-sm">OpenWeather Map doesn't provide precise forecast information for this specific region yet.</p>
-          <div className="flex items-center space-x-4">
-             <div className="text-lg font-medium text-gray-400">Current Guess: 25°C ☀️</div>
+          <AlertCircle className="w-16 h-16 text-blue-400 mb-4 animate-pulse" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Local Weather Station Offline</h3>
+          <p className="text-gray-500 mb-8 max-w-sm text-lg">
+            Detailed forecast for this specific beach is currently unavailable. 
+            We're showing general regional data instead.
+          </p>
+          <div className="flex items-center space-x-4 bg-blue-50 px-6 py-3 rounded-2xl border border-blue-100">
+             <div className="text-lg font-bold text-blue-600">Showing: Regional Overview</div>
           </div>
         </div>
       ) : (

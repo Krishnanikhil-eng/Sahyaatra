@@ -5,6 +5,7 @@ import { WeatherWidget } from '../components/WeatherWidget';
 import { ImageService, UnsplashImage } from '../services/imageService';
 import { CoTravelerButton } from '../components/CoTravelerButton';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { getCoordsForPlace } from '../utils/locationUtils';
 
 interface Place {
   _id: string;
@@ -279,7 +280,16 @@ export function PlaceDetail() {
         {/* Weather Widget */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Current Weather</h2>
-          <WeatherWidget location={`${place.place_name}, ${place.state}`} />
+          {(() => {
+            const coords = getCoordsForPlace(`${place.place_name}, ${place.state}`);
+            return (
+              <WeatherWidget 
+                location={`${place.place_name}, ${place.state}`} 
+                lat={coords?.lat}
+                lon={coords?.lon}
+              />
+            );
+          })()}
         </div>
 
         {/* Additional Images */}
