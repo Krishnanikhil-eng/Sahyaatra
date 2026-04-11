@@ -5,6 +5,7 @@ import { WeatherWidget } from '../components/WeatherWidget';
 import { ImageService, UnsplashImage } from '../services/imageService';
 import { CoTravelerButton } from '../components/CoTravelerButton';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { NewsSection } from '../components/NewsSection';
 import { getCoordsForPlace } from '../utils/locationUtils';
 
 interface Place {
@@ -411,6 +412,9 @@ export function PlaceDetail() {
             </div>
           </div>
         </div>
+
+        {/* Latest News */}
+        <NewsSection city={place.place_name} />
 
         {/* Special Notes */}
         {place.special_notes && (
