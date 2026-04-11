@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Newspaper, ExternalLink, AlertCircle } from 'lucide-react';
 
+// Formats the date similar to "2 hours ago"
 const timeAgo = (dateString: string) => {
   const date = new Date(dateString);
   const now = new Date();
@@ -22,7 +23,7 @@ const extractImageFromContent = (htmlContent: string) => {
   return match ? match[1] : null;
 };
 
-interface NewsItem {
+export interface NewsItem {
   title: string;
   pubDate: string;
   link: string;
@@ -32,61 +33,178 @@ interface NewsItem {
 }
 
 interface NewsSectionProps {
-  city: string;
+  placeName: string;
+  city?: string;
+  state: string;
+  category?: string;
 }
 
-export function NewsSection({ city }: NewsSectionProps) {
+const CACHE_EXPIRATION_MS = 1000 * 60 * 60 * 2; // 2 hours cache
+
+const getCachedNews = (key: string): NewsItem[] | null => {
+  try {
+    const cached = sessionStorage.getItem(`sahyatra_news_${key}`);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_EXPIRATION_MS) {
+        return data; // valid cache
+      }
+    }
+  } catch (e) {
+    console.error('Error reading from cache', e);
+  }
+  return null;
+};
+
+const setCachedNews = (key: string, data: NewsItem[]) => {
+  try {
+    sessionStorage.setItem(`sahyatra_news_${key}`, JSON.stringify({ data, timestamp: Date.now() }));
+  } catch (e) {
+    console.error('Error writing to cache', e);
+  }
+};
+
+const filterNegative = (items: NewsItem[]) => {
+  const negativeKeywords = [
+    'exam', 'result', 'murder', 'crime', 'politics', 'survey', 
+    'election', 'rape', 'arrest', 'scam', 'fraud', 'killing', 
+    'suicide', 'court', 'bjp', 'congress', 'sensex', 'nifty',
+    'minister', 'cm ', 'police', 'death', 'dead', 'dies', 'killed', 'accident', 'clash', 'firing'
+  ];
+
+  return items.filter(item => {
+    const textToCheck = `${item.title} ${item.description || ''} ${item.content || ''}`.toLowerCase();
+    return !negativeKeywords.some(kw => textToCheck.includes(kw));
+  });
+};
+
+const filterByPlace = (items: NewsItem[], placeName: string) => {
+  const pName = placeName.toLowerCase();
+  return items.filter(item => item.title.toLowerCase().includes(pName));
+};
+
+const fetchSingleQuery = async (query: string, limit = 5): Promise<NewsItem[]> => {
+  try {
+    const rssUrl = encodeURIComponent(`https://news.google.com/rss/search?q=${encodeURIComponent(query)}`);
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const data = await response.json();
+    if (data.status === 'ok' && data.items) {
+      return data.items.slice(0, limit); // fetch a bit for each, let's keep it small per query
+    }
+  } catch (err) {
+    console.error(`Error fetching news for query "${query}":`, err);
+  }
+  return [];
+};
+
+export function NewsSection({ placeName, city, state, category }: NewsSectionProps) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-    
-    const fetchNews = async () => {
+
+    const fetchAllNews = async () => {
       setLoading(true);
       setError(false);
-      try {
-        const rssUrl = encodeURIComponent(`https://news.google.com/rss/search?q=${encodeURIComponent(city)}`);
-        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch news');
+
+      // Using a versioned composite key to bust old irrelevant cache
+      const cacheKey = encodeURIComponent(`v3_news_${placeName}_${city}_${state}`);
+      const cached = getCachedNews(cacheKey);
+
+      if (cached) {
+        if (isMounted) {
+          setNews(cached);
+          setLoading(false);
         }
-        
-        const data = await response.json();
-        
-        if (data.status === 'ok' && data.items) {
-          if (isMounted) {
-            setNews(data.items.slice(0, 5));
+        return;
+      }
+
+      // Generate smart queries strictly anchored to the specific location
+      const queryList = [
+        placeName,
+        city && city.toLowerCase() !== placeName.toLowerCase() ? city : null,
+        city ? `${city} ${state}` : `${placeName} ${state}`,
+        `${placeName} ${category || 'tourism'}`
+      ].filter(Boolean) as string[];
+
+      // Deduplicate queries
+      const uniqueQueries = Array.from(new Set(queryList));
+
+      try {
+        const results = await Promise.allSettled(
+          uniqueQueries.map(q => fetchSingleQuery(q, 10))
+        );
+
+        let mergedArticles: NewsItem[] = [];
+        results.forEach((res) => {
+          if (res.status === 'fulfilled' && res.value) {
+            mergedArticles = [...mergedArticles, ...res.value];
           }
-        } else {
-          throw new Error('Invalid response format');
+        });
+
+        // Remove duplicates by exact link
+        const uniqueItemsMap = new Map<string, NewsItem>();
+        mergedArticles.forEach((item) => {
+          if (!uniqueItemsMap.has(item.link)) {
+            uniqueItemsMap.set(item.link, item);
+          }
+        });
+
+        // Filter and sort by latest date
+        let finalArticles = Array.from(uniqueItemsMap.values());
+        finalArticles.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+
+        // Apply negative filters to discard unwanted domains
+        const safeArticles = filterNegative(finalArticles);
+
+        // Strictly search for the tourist place
+        let placeFiltered = filterByPlace(safeArticles, placeName);
+
+        // Fallback to original safe list if completely filtered out
+        const resultArticles = placeFiltered.length > 0 ? placeFiltered : safeArticles;
+
+        // We only want the absolute top 5 newest/most relevant articles globally
+        const top5 = resultArticles.slice(0, 5);
+
+        if (isMounted) {
+          if (top5.length === 0 && mergedArticles.length === 0) {
+            // Technically not an error, just empty state, but if all calls errored out returning []
+            // we could flag this or just show empty. If lengths are 0 we show empty state.
+          }
+          setNews(top5);
+          setCachedNews(cacheKey, top5);
         }
       } catch (err) {
-        console.error('Error fetching news:', err);
+        console.error('Error in multi-query feature', err);
         if (isMounted) setError(true);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
 
-    if (city) {
-      fetchNews();
-    }
+    fetchAllNews();
 
     return () => {
       isMounted = false;
     };
-  }, [city]);
+  }, [placeName, city, state, category]);
+
+  const displayLocationLabel = city && city !== placeName ? city : placeName;
 
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-6 mt-8">
         <div className="flex items-center mb-6">
           <Newspaper className="w-6 h-6 mr-3 text-blue-600" />
-          <h2 className="text-2xl font-bold text-gray-900">Latest News About {city}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Latest News About {displayLocationLabel}</h2>
         </div>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
@@ -109,7 +227,7 @@ export function NewsSection({ city }: NewsSectionProps) {
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
           <h3 className="text-lg font-semibold text-gray-900">Failed to load news</h3>
-          <p className="text-gray-500 mt-2">We couldn't fetch the latest news for {city} right now.</p>
+          <p className="text-gray-500 mt-2">We couldn't fetch the latest news for {displayLocationLabel} right now.</p>
         </div>
       </div>
     );
@@ -120,8 +238,8 @@ export function NewsSection({ city }: NewsSectionProps) {
       <div className="bg-white rounded-lg shadow-sm p-6 mt-8">
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <Newspaper className="w-12 h-12 text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900">No recent news found</h3>
-          <p className="text-gray-500 mt-2">There don't seem to be any recent news articles about {city}.</p>
+          <h3 className="text-lg font-semibold text-gray-900">No relevant news found</h3>
+          <p className="text-gray-500 mt-2">There don't seem to be any relevant news articles about {displayLocationLabel} right now.</p>
         </div>
       </div>
     );
@@ -131,7 +249,7 @@ export function NewsSection({ city }: NewsSectionProps) {
     <div className="bg-white rounded-lg shadow-sm p-6 mt-8">
       <div className="flex items-center mb-6">
         <Newspaper className="w-6 h-6 mr-3 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-900">Latest News About {city}</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Latest News About {displayLocationLabel}</h2>
       </div>
       <div className="space-y-4">
         {news.map((item, index) => {
@@ -139,7 +257,7 @@ export function NewsSection({ city }: NewsSectionProps) {
 
           return (
             <a
-              key={index}
+              key={item.link || index}
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"

@@ -46,10 +46,19 @@ async function callGeminiWithKeyRotation(payload: any): Promise<Response | null>
         body: JSON.stringify(payload),
       });
 
-      // If rate limited, mark this key and try next one
-      if (response.status === 429) {
-        console.log(`Key ...${apiKey.slice(-8)} hit rate limit, trying next key`);
-        rateLimitedKeys.set(apiKey, now + 60000); // Block for 1 minute
+      // If rate limited or service unavailable, try next key
+      if (response.status === 429 || response.status >= 500) {
+        console.log(`Key ...${apiKey.slice(-8)} encountered status ${response.status}, trying next key`);
+        if (response.status === 429) {
+          rateLimitedKeys.set(apiKey, now + 60000); // Block for 1 minute locally
+        }
+        continue;
+      }
+
+      // If it's explicitly NOT ok (e.g. 400, 403), we should probably still try the next key
+      // just in case it's a key-specific suspension or quota issue disguised as something else
+      if (!response.ok) {
+        console.error(`Received error ${response.status} from key ...${apiKey.slice(-8)}. Rotating...`);
         continue;
       }
 

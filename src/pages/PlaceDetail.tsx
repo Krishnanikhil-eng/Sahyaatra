@@ -414,7 +414,11 @@ export function PlaceDetail() {
         </div>
 
         {/* Latest News */}
-        <NewsSection city={place.place_name} />
+        <NewsSection 
+          placeName={place.place_name} 
+          state={place.state} 
+          category={place.category}
+        />
 
         {/* Special Notes */}
         {place.special_notes && (
