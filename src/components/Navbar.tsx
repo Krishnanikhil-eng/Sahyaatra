@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { MapPin, Users, Sparkles, Compass, HelpCircle, User } from "lucide-react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SignOutButton } from "../SignOutButton";
+import { SOSButton } from "./SOSButton";
 
 export function Navbar() {
   return (
@@ -87,6 +88,7 @@ function UserControls() {
   return (
     <div className="flex items-center gap-2 sm:gap-4 shrink-0">
       <LanguageSwitcher />
+      <SOSButton />
       
       <Authenticated>
         <div className="flex items-center gap-2 sm:gap-3 border-l border-gray-200 pl-2 sm:pl-4">

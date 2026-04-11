@@ -9,6 +9,7 @@ import { PageBackground } from "./components/PageBackground";
 import { AppRoutes } from "./AppRoutes";
 import { Navigation } from "./components/Navigation";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { SOSButton } from "./components/SOSButton";
 import { MapPin, Menu, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
@@ -55,6 +56,7 @@ function Header() {
 
           <div className="flex items-center space-x-4">
             <LanguageSwitcher />
+            <SOSButton />
             <div className="hidden md:flex items-center space-x-4">
               <Authenticated>
                 <div className="flex items-center space-x-3">
