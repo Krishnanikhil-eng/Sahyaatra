@@ -67,11 +67,10 @@ function NavLinks() {
         <Link
           key={link.to}
           to={link.to}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-all whitespace-nowrap text-sm font-medium ${
-            isActive(link.to)
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-all whitespace-nowrap text-sm font-medium ${isActive(link.to)
               ? 'bg-blue-50 text-blue-600 shadow-sm'
               : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
-          }`}
+            }`}
         >
           {link.icon}
           <span>{link.label}</span>
@@ -89,7 +88,7 @@ function UserControls() {
     <div className="flex items-center gap-2 sm:gap-4 shrink-0">
       <LanguageSwitcher />
       <SOSButton />
-      
+
       <Authenticated>
         <div className="flex items-center gap-2 sm:gap-3 border-l border-gray-200 pl-2 sm:pl-4">
           <Link
@@ -105,7 +104,7 @@ function UserControls() {
           <SignOutButton />
         </div>
       </Authenticated>
-      
+
       <Unauthenticated>
         <div className="text-sm font-medium text-gray-700 hidden sm:block border-l border-gray-200 pl-2 sm:pl-4">
           {t('auth:signInPrompt')}
