@@ -371,7 +371,7 @@ export const chatWithAI = action({
       return "AI service unavailable. Please try again later.";
     }
 
-    const systemPrompt = `You are sahyaatra AI, a helpful travel assistant for India.You help users with:
+    const systemPrompt = `You are Sahyaatra AI, a helpful travel assistant for India.You help users with:
   - Travel planning and recommendations
     - Budget advice for Indian destinations
       - Cultural insights and local tips

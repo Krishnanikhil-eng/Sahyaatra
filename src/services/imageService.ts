@@ -4,7 +4,7 @@
  */
 const PEXELS_API_KEY = "9WIvfcdWPVL1MG9JS8J45MW1IVfSx8cZ8BMjk8ghvs8aezKZHmuXhxkC";
 const PEXELS_API_URL = "https://api.pexels.com/v1";
-const UNSPLASH_ACCESS_KEY = "PDa7fpLGuSdOUmpVJyh6GSyYwdyeImsKsBmP8GgcXBg";
+const UNSPLASH_ACCESS_KEY = "8lkmwGyPAcKrZxZx2ehAPwOSUUbRJQ4EmMj1mz5UmQQ";
 const UNSPLASH_API_URL = "https://api.unsplash.com";
 
 export interface UnsplashImage {
@@ -30,17 +30,29 @@ export class ImageService {
   private static CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
   private static NOISY_WORDS = ["famous", "best", "top", "landmark", "monument", "tourist", "attraction", "india", "india tourism"];
+  private static BLACKLIST_KEYWORDS = ["legislative", "assembly", "elections", "constituency", "politics", "government", "vidhan sabha", "parliament", "seating chart"];
 
-  private static fallbackPool: string[] = [
-    'https://images.unsplash.com/photo-1514222134-b57cbb8ce073', // Kerala
-    'https://images.unsplash.com/photo-1596422846543-75c6fc18a5bf', // Jaipur
-    'https://images.unsplash.com/photo-1590050752117-23a9d7fc2140', // Goa
-    'https://images.unsplash.com/photo-1477587458883-47145ed94245', // Temple
-    'https://images.unsplash.com/photo-1496372412473-e8548ffd82bc', // Shimla
-  ];
+  private static fallbackPools: Record<string, string[]> = {
+    nature: [
+      'https://images.unsplash.com/photo-1514222134-b57cbb8ce073',
+      'https://images.unsplash.com/photo-1496372412473-e8548ffd82bc',
+    ],
+    fort: [
+      'https://images.unsplash.com/photo-1596422846543-75c6fc18a5bf', // generic fort/palace
+      'https://images.unsplash.com/photo-1582510003544-4d00b7f74220', // fort
+    ],
+    temple: [
+      'https://images.unsplash.com/photo-1477587458883-47145ed94245',
+      'https://images.unsplash.com/photo-1590050752117-23a9d7fc2140',
+    ],
+    default: [
+      'https://images.unsplash.com/photo-1524492412937-b28074a5d7da',
+      'https://images.unsplash.com/photo-1506461883276-594a12b11dc3',
+    ]
+  };
 
   /**
-   * Main entry point for place images using a 5-tier discovery logic.
+   * Main entry point for place images using Wikipedia and Unsplash.
    */
   static async getPlaceImages(
     placeName: string,
@@ -51,7 +63,6 @@ export class ImageService {
   ): Promise<UnsplashImage[]> {
     const cacheKey = `${placeName}-${state}-${type}-${count}`.toLowerCase();
     
-    // 1. Check Cache with 24h TTL
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
       return cached.images;
@@ -59,29 +70,21 @@ export class ImageService {
 
     const cleanedPlace = this.sanitizeQuery(placeName);
     const cleanedState = this.sanitizeQuery(state);
-    const cleanedType = this.sanitizeQuery(type);
     let finalImages: UnsplashImage[] = [];
 
-    // Define Tiers
-    const tiers = [
-      // Tier 1: placeName + state + country + type
-      `${cleanedPlace} ${cleanedState} ${country} ${cleanedType}`.trim(),
-      // Tier 2: placeName + state + country
-      `${cleanedPlace} ${cleanedState} ${country}`.trim(),
-      // Tier 3: placeName + country
-      `${cleanedPlace} ${country}`.trim(),
-      // Tier 4: state + "tourism" + country
-      `${cleanedState} tourism ${country}`.trim(),
-    ];
+    // 1. Try Wikipedia (Highest Accuracy)
+    const wikiImage = await this.fetchFromWikipedia(cleanedPlace, cleanedState, country);
+    if (wikiImage) {
+      finalImages.push(wikiImage);
+    }
 
-    // Discovery Loop (Short-Circuit)
-    for (const query of tiers) {
-      if (finalImages.length >= count) break;
+    // 2. Fetch remaining from Unsplash/Pexels
+    const remainingCount = count - finalImages.length;
+    if (remainingCount > 0) {
+      const query = `${cleanedPlace} ${cleanedState} ${country}`.trim();
+      const unplashResults = await this.fetchFromSources(query, remainingCount + 3, cleanedPlace);
       
-      const tierResults = await this.fetchFromSources(query, count - finalImages.length, cleanedPlace);
-      
-      // Filter & Validate
-      const validResults = tierResults.filter(img => 
+      const validResults = unplashResults.filter(img => 
         this.validateRelevance(img, cleanedPlace) && 
         !finalImages.some(existing => existing.id === img.id)
       );
@@ -89,16 +92,81 @@ export class ImageService {
       finalImages = [...finalImages, ...validResults];
     }
 
-    // Tier 5: Fallback if still empty
+    // 3. Category Fallback if still empty or deficient
     if (finalImages.length === 0) {
-      finalImages = this.getFallbackImages(count, cleanedPlace);
+      finalImages = this.getFallbackImages(count, cleanedPlace, type);
+    } else if (finalImages.length < count) {
+      const fallbacks = this.getFallbackImages(count - finalImages.length, cleanedPlace, type);
+      finalImages = [...finalImages, ...fallbacks];
     }
 
-    // Limit to count and cache
     const results = finalImages.slice(0, count);
     this.cache.set(cacheKey, { images: results, timestamp: Date.now() });
     
     return results;
+  }
+
+  /**
+   * Fetch exactly accurate image from Wikipedia
+   */
+  private static async fetchFromWikipedia(placeName: string, state: string, country: string): Promise<UnsplashImage | null> {
+    // 1. Try the exact place name first! (This prevents "Agra Fort Uttar Pradesh" from matching the generic "Agra" or "UP" page)
+    // 2. If that fails, append the state for disambiguation.
+    const queries = [
+      placeName.replace(/\s+/g, ' ').trim(),
+      `${placeName} ${state}`.replace(/\s+/g, ' ').trim(),
+    ];
+
+    for (const query of queries) {
+      try {
+        // Fetch a few results so we can skip blacklisted ones
+        const res = await fetch(
+          `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=5&prop=pageimages&format=json&pithumbsize=1000&origin=*`
+        );
+        if (!res.ok) continue;
+        
+        const data = await res.json();
+        if (!data.query || !data.query.pages) continue;
+        
+        const pages = Object.values(data.query.pages) as any[];
+        
+        // Sort by index (search relevance order)
+        pages.sort((a: any, b: any) => (a.index || 0) - (b.index || 0));
+        
+        // Find the first page with a thumbnail that isn't blacklisted
+        for (const page of pages) {
+          if (!page.thumbnail) continue;
+          
+          const titleLower = page.title.toLowerCase();
+          const placeLower = placeName.toLowerCase();
+          
+          // Only skip if the title contains a blacklisted word that ISN'T part of the place name
+          const isBlacklisted = this.BLACKLIST_KEYWORDS.some(word => 
+            titleLower.includes(word) && !placeLower.includes(word)
+          );
+          
+          if (isBlacklisted) {
+            console.log(`[ImageService] Skipping blacklisted Wikipedia page: "${page.title}" for "${placeName}"`);
+            continue;
+          }
+          
+          console.log(`[ImageService] Wikipedia hit for "${query}" → ${page.title}`);
+          return {
+            id: `wiki_${page.pageid}`,
+            urls: {
+              small: page.thumbnail.source,
+              regular: page.thumbnail.source,
+              full: page.thumbnail.source,
+            },
+            alt_description: page.title,
+            user: { name: 'Wikimedia Commons' }
+          };
+        }
+      } catch (e) {
+        console.error(`Wikipedia fetch failed for "${query}"`, e);
+      }
+    }
+    return null;
   }
 
   /**
@@ -174,7 +242,7 @@ export class ImageService {
     const cleanedCategory = this.sanitizeQuery(category);
     const results = await this.fetchFromSources(`${cleanedCategory} india tourism`, count, cleanedCategory);
     
-    const finalResults = results.length > 0 ? results.slice(0, count) : this.getFallbackImages(count, seed || category);
+    const finalResults = results.length > 0 ? results.slice(0, count) : this.getFallbackImages(count, seed || category, category);
     this.cache.set(cacheKey, { images: finalResults, timestamp: Date.now() });
     return finalResults;
   }
@@ -190,7 +258,7 @@ export class ImageService {
     }
 
     const results = await this.fetchFromSources("india tourism landscape travel", count, "India");
-    const finalResults = results.length > 0 ? results.slice(0, count) : this.getFallbackImages(count, "India");
+    const finalResults = results.length > 0 ? results.slice(0, count) : this.getFallbackImages(count, "India", "nature");
     this.cache.set(cacheKey, { images: finalResults, timestamp: Date.now() });
     return finalResults;
   }
@@ -200,30 +268,47 @@ export class ImageService {
    */
   private static validateRelevance(image: UnsplashImage, coreKeyword: string): boolean {
     const textToMatch = (image.alt_description || "").toLowerCase();
-    const keywords = coreKeyword.toLowerCase().split(' ').filter(k => k.length > 2);
+    const keywords = coreKeyword.toLowerCase().split(' ').filter(k => k.length > 3);
     
     if (keywords.length === 0) return true;
     
-    // Core check: if the main place name is in the description
-    return keywords.some(k => textToMatch.includes(k));
+    // Strict Validation: Require at least 50% of the significant keywords to match
+    // Prevent generic words like "Fort" or "Caves" from returning incorrect places.
+    const matchCount = keywords.filter(k => textToMatch.includes(k)).length;
+    const requiredMatches = Math.max(1, Math.ceil(keywords.length / 2));
+    
+    return matchCount >= requiredMatches;
   }
 
   /**
    * Curated state-based fallback pool
    */
-  private static getFallbackImages(count: number, seed: string): UnsplashImage[] {
+  private static getFallbackImages(count: number, seed: string, type: string = ""): UnsplashImage[] {
+    let poolKey = 'default';
+    const typeLower = type.toLowerCase();
+    
+    if (typeLower.includes('fort') || typeLower.includes('historical') || typeLower.includes('monument')) {
+      poolKey = 'fort';
+    } else if (typeLower.includes('temple') || typeLower.includes('shrine') || typeLower.includes('pilgrimage')) {
+      poolKey = 'temple';
+    } else if (typeLower.includes('hill') || typeLower.includes('cave') || typeLower.includes('lake') || typeLower.includes('valley') || typeLower.includes('nature')) {
+      poolKey = 'nature';
+    }
+
+    const pool = this.fallbackPools[poolKey] || this.fallbackPools['default'];
+
     const images: UnsplashImage[] = [];
     const hash = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    const startIndex = hash % this.fallbackPool.length;
+    const startIndex = hash % pool.length;
 
     for (let i = 0; i < count; i++) {
-      const idx = (startIndex + i) % this.fallbackPool.length;
+      const idx = (startIndex + i) % pool.length;
       images.push({
         id: `fallback-${idx}-${seed}`,
         urls: {
-          small: `${this.fallbackPool[idx]}?w=400&h=300&fit=crop`,
-          regular: `${this.fallbackPool[idx]}?w=800&h=600&fit=crop`,
-          full: `${this.fallbackPool[idx]}?w=1200&h=800&fit=crop`
+          small: `${pool[idx]}?w=400&h=300&fit=crop`,
+          regular: `${pool[idx]}?w=800&h=600&fit=crop`,
+          full: `${pool[idx]}?w=1200&h=800&fit=crop`
         },
         alt_description: `Beautiful view of ${seed}`,
         user: { name: 'Sahyaatra' }

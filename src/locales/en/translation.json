@@ -531,7 +531,7 @@
     "error": "The verification link you followed is either invalid, has expired, or the trip is no longer active.",
     "failedSubtitle": "Invalid or inactive trip verification",
     "failedTitle": "Verification Failed",
-    "footer": "Secure Trip Verification System • Smart-BU",
+    "footer": "Secure Trip Verification System • Sahyaatra",
     "successSubtitle": "This is a verified co-traveller trip",
     "title": "Verified Trip"
   },

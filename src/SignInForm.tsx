@@ -206,9 +206,29 @@ export function SignInForm() {
           placeholder={t('auth:auth.password')}
           required
         />
-        <button className="auth-button" type="submit" disabled={submitting}>
-          {step === "signIn" ? t('auth:auth.signIn') : t('auth:auth.signUp')}
-        </button>
+        <div className="flex flex-col gap-3">
+          <button className="auth-button" type="submit" disabled={submitting}>
+            {step === "signIn" ? t('auth:auth.signIn') : t('auth:auth.signUp')}
+          </button>
+          
+          {step === "signIn" && (
+            <button
+              type="button"
+              className="w-full px-4 py-3 rounded bg-slate-800 text-slate-200 font-semibold hover:bg-slate-700 transition-colors shadow-sm disabled:opacity-50 border border-slate-700 flex items-center justify-center gap-2"
+              disabled={submitting}
+              onClick={() => {
+                setSubmitting(true);
+                signIn("anonymous").catch(() => {
+                  toast.error(t('auth:toast.signInFailed', 'Failed to sign in'));
+                  setSubmitting(false);
+                });
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"></path><path d="M21 13a9 9 0 1 1-3-7.7L21 8"></path></svg>
+              {t('auth:auth.signInAnonymous', 'Sign in anonymously')}
+            </button>
+          )}
+        </div>
         
         <div className="text-center text-sm text-secondary">
           <span>
